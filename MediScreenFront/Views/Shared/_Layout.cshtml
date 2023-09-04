@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://kit.fontawesome.com/158c254b57.js" crossorigin="anonymous"></script>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - Mediscreen</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/MediScreenFront.styles.css" asp-append-version="true"/>
+</head>
+<body>
+<header>
+    <banner class="d-flex">
+        <img src="~/img/logo.png" alt="Mediscreen logo" class="logo" style="height:5rem"/>
+        <a class="navbar-brand bannerTitle" asp-area="" asp-controller="Home" asp-action="Index">
+            <h1 class="fw-bold">Mediscreen</h1>
+        </a>
+        
+        @using (Html.BeginForm("", "Home", FormMethod.Post, new { @class= "row contact-form rounded-pill link no-gutters sticky-end"}))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div class="col-4 col-lg-8 d-inline-block d-lg-flex align-items-center float">
+                                        <div class="form-group">
+                                            <label><i class="lni lni-restaurant" aria-hidden="true"></i></label>
+                                            <input type="text" name="nomResto" placeholder="" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-lg-4">
+                                        <i class="fa fa-spinner fa-spin mr-2 d-none" aria-hidden="true"></i>
+                                        <button type="submit" class="btn main-btn rounded-pill w-100 h-100 contact_btn" value="">
+                                            <i class="fa-solid fa-magnifying-glass"></i>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <span>Questions ?</span> <a href="#" class="text-primary text-decoration-underline">Contact-us!</a>
+                                    </div>
+                                    
+                                }
+    </banner>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-primary border-bottom box-shadow mt-3 fs-4">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    </li>
+                </ul>
+                <partial name="_LoginPartial"/>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2023 - MediScreenFront - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </div>
+</footer>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
