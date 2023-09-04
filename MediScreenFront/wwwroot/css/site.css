@@ -1,10 +1,18 @@
+:root{
+    --primary-color: #00849a;
+}
+
+a:hover {
+  color: var(--primary-color);
+}
+
 html {
   font-size: 14px;
 }
 
 @media (min-width: 768px) {
   html {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 
@@ -28,7 +36,24 @@ body {
 
 .sticky-end
 {
-    position: fixed;
+    position: absolute;
     top: 0;
     right: 1rem;
+}
+
+.primary-color {
+  color: var(--primary-color);
+}
+
+.primary-bg {
+  background-color: var(--primary-color);
+}
+
+.primary-border {
+  border: 1.5px solid var(--primary-color); !important;
+}
+
+.home-img {
+    width: 100%;
+    object-fit: contain;
 }
