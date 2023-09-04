@@ -1,0 +1,7 @@
+*/bin/*
+*/obj/*
+.idea/
+.docker/
+*.idea/*
+*.docker/*
+!*MediScreenLib/bin/Debug/net7.0/*
