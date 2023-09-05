@@ -1,6 +1,7 @@
 */bin/*
 MediScreenFront/bin/*
 MediScreenFront/obj/*
+MediScreenFront/Properties/launchSettings.json
 MediScreenApi/MediScreenApi/bin/*
 MediScreenApi/MediScreenApi/obj/*
 */obj/*
