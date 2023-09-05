@@ -5,7 +5,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 
 
-const string connectionUri = "mongodb+srv://MediscreenUser:BnIkKqZYxjNHbOwR@cluster0.inh05rr.mongodb.net/?retryWrites=true&w=majority";
+var connectionUri = Environment.GetEnvironmentVariable("Mongodatabase_ConnectionString");
 var settings = MongoClientSettings.FromConnectionString(connectionUri);
 // Set the ServerApi field of the settings object to Stable API version 1
 settings.ServerApi = new ServerApi(ServerApiVersion.V1);
