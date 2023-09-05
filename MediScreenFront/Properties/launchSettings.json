@@ -15,7 +15,7 @@
       "applicationUrl": "http://localhost:5136",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Mongodatabase_ConnectionString": "mongodb+srv://MediscreenUser:BnIkKqZYxjNHbOwR@cluster0.inh05rr.mongodb.net/?retryWrites=true&w=majority"
+        "Mongodatabase_ConnectionString": ""
       }
     },
     "https": {
@@ -25,7 +25,7 @@
       "applicationUrl": "https://localhost:7042;http://localhost:5136",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Mongodatabase_ConnectionString": "mongodb+srv://MediscreenUser:BnIkKqZYxjNHbOwR@cluster0.inh05rr.mongodb.net/?retryWrites=true&w=majority"
+        "Mongodatabase_ConnectionString": ""
       }
     },
     "IIS Express": {
@@ -33,7 +33,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Mongodatabase_ConnectionString": "mongodb+srv://MediscreenUser:BnIkKqZYxjNHbOwR@cluster0.inh05rr.mongodb.net/?retryWrites=true&w=majority"
+        "Mongodatabase_ConnectionString": ""
       }
     }
   }
