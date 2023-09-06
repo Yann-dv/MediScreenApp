@@ -4,8 +4,9 @@ using MediScreenFront.Data;
 using MongoDB.Driver;
 using MongoDB.Bson;
 
+DotNetEnv.Env.Load(); //env var loads
+var connectionUri = Environment.GetEnvironmentVariable("MONGODB_CONNECTIONSTRING");
 
-var connectionUri = Environment.GetEnvironmentVariable("Mongodatabase_ConnectionString");
 var settings = MongoClientSettings.FromConnectionString(connectionUri);
 // Set the ServerApi field of the settings object to Stable API version 1
 settings.ServerApi = new ServerApi(ServerApiVersion.V1);
@@ -14,10 +15,6 @@ var client = new MongoClient(settings);
 // Send a ping to confirm a successful connection
 try {
     var result = client.GetDatabase("admin").RunCommand<BsonDocument>(new BsonDocument("ping", 1));
-    //TODO: delete the following two lines
-    var db = client.GetDatabase("MediScreenDb").GetCollection<BsonDocument>("Patient");
-    db.FindAsync(new BsonDocument()).Result.ToListAsync().Result.ForEach(p => Console.WriteLine(p));
-    
     Console.WriteLine("Pinged your deployment. You successfully connected to MongoDB!");
 } catch (Exception ex) {
     Console.WriteLine(ex);

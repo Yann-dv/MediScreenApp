@@ -1,3 +1,5 @@
+@model List<Patient>
+
 @{
     ViewBag.Title = "Services";
 }
@@ -6,4 +8,18 @@
     <h2>@ViewData["Title"]</h2>
 
     <p>This is the Services page.</p>
+    
+    <div>
+        DB Data:
+        <ul>
+            @foreach (var patient in Model)
+            {
+                <li>
+                    <p>Patient: @patient.Id</p>
+                    <p>First Name: @patient.FName</p>
+                    <p>Last Name: @patient.LName</p>
+                </li>
+            }
+        </ul>
+    </div>
 </section>
