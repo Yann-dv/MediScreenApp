@@ -1,8 +1,8 @@
 */bin/*
 MediScreenFront/bin/*
 MediScreenFront/obj/*
-MediScreenApi/MediScreenApi/bin/*
-MediScreenApi/MediScreenApi/obj/*
+MediScreenApi/bin/*
+MediScreenApi/obj/*
 */obj/*
 .idea/
 .docker/
