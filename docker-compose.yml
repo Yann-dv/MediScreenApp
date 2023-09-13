@@ -17,6 +17,8 @@ services:
   api:
     image: api
     container_name: api-container
+    environment:
+      "MONGODB_CONNECTIONSTRING": "mongodb+srv://MediscreenUser:BnIkKqZYxjNHbOwR@cluster0.inh05rr.mongodb.net"
     build:
         context: . # Point to the root directory
         dockerfile: MediScreenApi/Dockerfile

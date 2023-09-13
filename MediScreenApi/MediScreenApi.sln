@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediScreenApi", "MediScreenApi\MediScreenApi.csproj", "{69878D46-F715-4EBE-8AC5-3CC69F347C11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediScreenApi", "MediScreenApi.csproj", "{69878D46-F715-4EBE-8AC5-3CC69F347C11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

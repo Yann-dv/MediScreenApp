@@ -19,8 +19,6 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.10"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.10"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.10"/>
-        <PackageReference Include="MongoDB.Bson" Version="2.21.0" />
-        <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
     </ItemGroup>
 
 </Project>
