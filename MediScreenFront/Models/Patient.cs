@@ -5,7 +5,7 @@ namespace MediScreenFront.Models;
 public class Patient
 {
     [DataMember]
-    public int Id { get; set; }
+    public string Id { get; set; }
     
     [DataMember]
     public string FName { get; set; }

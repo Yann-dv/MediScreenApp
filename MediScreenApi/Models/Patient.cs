@@ -1,14 +1,16 @@
 using System.Runtime.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace MediScreenApi.Models;
 
 public class Patient
 {
-    [BsonId]
     [DataMember]
-    public ObjectId Id { get; set; }
+    [BsonId(IdGenerator = typeof(StringObjectIdGenerator))] 
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string ID { get; set; }
     
     [DataMember]
     [BsonElement("Fname")]

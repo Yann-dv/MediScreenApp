@@ -1,11 +1,14 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MediScreenFront.Models;
+using Newtonsoft.Json;
 
 namespace MediScreenFront.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly string _calendarApiUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker" ? "http://host.docker.internal:600/api/Patients" : "https://localhost:44337/api/Patients";
+
     private readonly ILogger<HomeController> _logger;
 
     public HomeController(ILogger<HomeController> logger)
@@ -36,7 +39,28 @@ public class HomeController : Controller
 
     public IActionResult Services()
     {
-        return View();
+        var patients = new List<Patient>();
+
+        try
+        {
+            using (var response = new HttpClient().GetAsync(_calendarApiUri))
+            {
+                if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
+                    var deserializedObject = JsonConvert.DeserializeObject<List<Patient>>(apiResponseObject);
+                    
+                    patients = deserializedObject;
+                }
+                else
+                    ViewBag.StatusCode = response.Result.StatusCode;
+            }
+        }
+        catch (System.Exception e)
+        {
+            ViewBag.StatusCode = e.Message;
+        }
+        return View(patients);
     }
 
     public IActionResult Resources()
