@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+
+  ### Mediscreeen container
+  mediscreen:
+    image: mediscreen
+    container_name: mediscreen-container
+    build:
+      context: . # Point to the root directory
+      dockerfile: MediScreenFront/Dockerfile
+    ports:
+      - "8081:80"
+    networks:
+      -  mediscreen-network
+  
+  ### Api container
+  api:
+    image: api
+    container_name: api-container
+    build:
+        context: . # Point to the root directory
+        dockerfile: MediScreenApi/Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      -  mediscreen-network
+
+
+networks:
+  mediscreen-network:
+    driver: bridge
+    
