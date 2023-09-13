@@ -21,7 +21,7 @@ services:
         context: . # Point to the root directory
         dockerfile: MediScreenApi/Dockerfile
     ports:
-      - "8080:8080"
+      - "600:80"
     networks:
       -  mediscreen-network
 
