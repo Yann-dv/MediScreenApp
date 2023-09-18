@@ -1,0 +1,29 @@
+@model MediScreenFront.Models.RegisterViewModel
+
+<h2 class="m-2">Register</h2>
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class="login-form mx-4" }))
+{
+    @Html.ValidationSummary()
+    @Html.AntiForgeryToken()
+    <div class="form-group col-md-4">
+        @Html.LabelFor(model => model.UserName)
+        @Html.TextBoxFor(model => model.UserName, new { @class = "form-control" })
+    </div>
+    <div class="form-group col-md-4">
+        @Html.LabelFor(model => model.Email)
+        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+    </div>
+    <div class="form-group col-md-4">
+        @Html.LabelFor(model => model.Password)
+        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+    </div>
+    <div class="form-group col-md-4">
+            @Html.LabelFor(model => model.ConfirmPassword)
+            @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary my-2">Register</button>
+}
+
+<div class="m-4">
+    <p>You already have an account ? <a href="/Account/Login">Login</a></p>
+</div>

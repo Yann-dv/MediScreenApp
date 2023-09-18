@@ -25,7 +25,7 @@ public class PatientsController : ControllerBase
         var patientList = new List<Patient>();
         try
         {
-            var collection = db.GetCollection<BsonDocument>("Patient");
+            var collection = db.GetCollection<BsonDocument>("Patients");
             //db.FindAsync(new BsonDocument()).Result.ToListAsync().Result.ForEach(p => Console.WriteLine(p));
 
             var documents = collection.FindAsync(new BsonDocument()).Result.ToListAsync().Result;

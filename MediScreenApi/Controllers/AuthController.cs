@@ -37,6 +37,27 @@ public class AuthController : ControllerBase
         return Ok(user);
     }
     
+    [HttpGet]
+    [Route("userExists")]
+    public async Task<IActionResult> UserExists([FromQuery] string userName, [FromQuery] string email)
+    {
+        var user = await _userManager.FindByNameAsync(userName);
+
+        if (user != null)
+        {
+            return Ok(true);
+        }
+
+        user = await _userManager.FindByEmailAsync(email);
+
+        if (user != null)
+        {
+            return Ok(true);
+        }
+
+        return Ok(false);
+    }
+    
     [HttpPost]
     [Route("register")]
     public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
