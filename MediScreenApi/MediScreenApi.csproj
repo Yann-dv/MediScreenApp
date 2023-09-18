@@ -8,10 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="3.1.2" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10"/>
         <PackageReference Include="MongoDB.Bson" Version="2.21.0" />
         <PackageReference Include="MongoDbClient" Version="1.0.23" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
