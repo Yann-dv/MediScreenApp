@@ -35,5 +35,4 @@ public class Patient
     [DataMember]
     [BsonElement("Phone")]
     public string Phone { get; set; }
-    
 }
