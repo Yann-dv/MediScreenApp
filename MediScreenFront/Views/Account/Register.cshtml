@@ -1,5 +1,9 @@
 @model MediScreenFront.Models.RegisterViewModel
 
+@{
+    ViewBag.Title = "Register";
+}
+
 <h2 class="m-2">Register</h2>
 @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class="login-form mx-4" }))
 {

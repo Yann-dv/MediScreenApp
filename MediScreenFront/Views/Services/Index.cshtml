@@ -1,25 +1,63 @@
+@using Microsoft.IdentityModel.Tokens
 @model List<Patient>
 
 @{
     ViewBag.Title = "Services";
 }
 
-<section class="container">
+<section class="container p-4">
     <h2>@ViewData["Title"]</h2>
-
-    <p>This is the Services page.</p>
-    
-    <div>
-        DB Data:
-        <ul>
-            @foreach (var patient in Model)
-            {
+    <div class="services-container d-flex">
+    <div class="services-form">
+        <!-- Dropend buttons -->
+        <div class="btn-group dropend my-2">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Patients
+            </button>
+            <ul class="dropdown-menu my-2 bg-secondary">
                 <li>
-                    <p>Patient: @patient.Id</p>
-                    <p>First Name: @patient.FName</p>
-                    <p>Last Name: @patient.LName</p>
+                    <div class="dropdown-item">
+                        <h3>List all patients</h3>
+                        @using (Html.BeginForm("ListPatients", "Services", FormMethod.Post, new { @class="mx-4" }))
+                        {
+                            <button type="submit" class="btn btn-primary my-2">List all patients</button>
+                        }
+                    </div>
                 </li>
+                <li>
+                    <div class="dropdown-item">
+                    <h3>Find a patient</h3>
+                     @using (Html.BeginForm("GetOnePatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                     {
+                         <div class="form-group">
+                             <input type="text" class="form-control" id="query" name="query" placeholder="Enter a query">
+                         </div>    
+                         <button type="submit" class="btn btn-primary my-2">Search</button>}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+        <div class="service-ouptut ms-4 d-grid container">
+            <div class="row">
+            @if (!Model.IsNullOrEmpty() && Model.Count > 0)
+            {
+                foreach (var patient in @Model)
+                {
+                    <div class="card-body primary-border rounded w-25 m-3 p-3">
+                        <p>Id: @patient.Id </p>
+                        <ul>
+                            <li>Gender: @patient.Gender</li>
+                            <li>First Name: @patient.FName</li>
+                            <li>Last Name: @patient.LName</li>
+                            <li>Date of Birth: @patient.Dob</li>
+                            <li>Address: @patient.Address</li>
+                            <li>Phone: @patient.Phone</li>
+                        </ul>
+                    </div>
+                }
             }
-        </ul>
+            </div>
+        </div>
     </div>
 </section>
