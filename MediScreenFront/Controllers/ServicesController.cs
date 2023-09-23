@@ -1,3 +1,4 @@
+using System.Text;
 using MediScreenFront.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +60,34 @@ public class ServicesController : Controller
                     var deserializedObject = JsonConvert.DeserializeObject<List<Patient>>(apiResponseObject);
 
                     patients = deserializedObject;
+                }
+                else
+                    ViewBag.StatusCode = response.Result.StatusCode;
+            }
+        }
+        catch (System.Exception e)
+        {
+            ViewBag.StatusCode = e.Message;
+        }
+
+        return View("Index", patients);
+    }
+    
+    [HttpPost]
+    public IActionResult CreatePatient(Patient patient)
+    {
+        var patients = new List<Patient>();
+        try
+        {
+            using (var response = new HttpClient().PostAsync(_apiUri + "/CreatePatient", new StringContent(JsonConvert.SerializeObject(patient), Encoding.UTF8, "application/json")))
+            {
+                if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
+                    var deserializedObject = JsonConvert.DeserializeObject<Patient>(apiResponseObject);
+
+                    patient = deserializedObject;
+                    if (patient != null) patients.Add(patient);
                 }
                 else
                     ViewBag.StatusCode = response.Result.StatusCode;
