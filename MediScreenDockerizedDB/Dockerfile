@@ -13,10 +13,8 @@ WORKDIR /app
 # Remove MediScreenDockerizedDB for docker-compose without others services
 COPY MediScreenDockerizedDB/entrypoint.sh ./
 COPY MediScreenDockerizedDB/init-db.sh ./
-COPY MediScreenDockerizedDB/CH.mdf ./
-COPY MediScreenDockerizedDB/CH_log.ldf ./
-COPY MediScreenDockerizedDB/CH_tests.mdf ./
-COPY MediScreenDockerizedDB/CH_tests_log.ldf ./
+COPY MediScreenDockerizedDB/MediScreenDb.mdf ./
+COPY MediScreenDockerizedDB/MediScreenDb_log.ldf ./
 
 USER root 
 RUN chmod +x entrypoint.sh init-db.sh
