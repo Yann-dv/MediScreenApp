@@ -22,13 +22,10 @@ echo "Container initialization: creating the database if needed"
 /opt/mssql/bin/mssql-conf set sqlagent.enabled true
 
 # Move the database files to the data directory
-mv /app/CH.mdf /var/opt/mssql/data/
-mv /app/CH_log.ldf /var/opt/mssql/data/
-mv /app/CH_tests.mdf /var/opt/mssql/data/
-mv /app/CH_tests_log.ldf /var/opt/mssql/data/
+mv /app/MediScreenDb.mdf /var/opt/mssql/data/
+mv /app/MediScreenDb_log.ldf /var/opt/mssql/data/
 
-/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "CREATE DATABASE CalifornianHealthDatabase ON (FILENAME = '/var/opt/mssql/data/CH.mdf'), (FILENAME = '/var/opt/mssql/data/CH_log.ldf') FOR ATTACH"
-/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "CREATE DATABASE CalifornianHealthDatabaseTests ON (FILENAME = '/var/opt/mssql/data/CH_tests.mdf'), (FILENAME = '/var/opt/mssql/data/CH_tests_log.ldf') FOR ATTACH"
+/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "CREATE DATABASE MediScreenDb ON (FILENAME = '/var/opt/mssql/data/MediScreenDb.mdf'), (FILENAME = '/var/opt/mssql/data/MediScreenDb_log.ldf') FOR ATTACH"
 echo "Container initialization: done"
 
 # Keep the script running (container won't exit)
