@@ -10,7 +10,7 @@ public class ServicesController : Controller
 {
     private readonly string _apiUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
         ? "http://host.docker.internal:600/api/Patients"
-        : "https://localhost:44337/api/Patients";
+        : "https://localhost:7192/api/Patients";
     
     public IActionResult Index(List<Patient>? patients)
     {
@@ -51,7 +51,7 @@ public class ServicesController : Controller
     var patients = new List<Patient>();
         try
         {
-            using (var response = new HttpClient().GetAsync(_apiUri + "/getAllPatients"))
+            using (var response = new HttpClient().GetAsync(_apiUri + "/GetAllPatients"))
             {
                 if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
                 {

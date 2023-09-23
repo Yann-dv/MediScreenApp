@@ -3,6 +3,18 @@
 
 @{
     ViewBag.Title = "Services";
+
+    string TruncateUserId(string userId, int maxLength)
+    {
+        if (userId.Length <= maxLength)
+        {
+            return userId;
+        }
+        else
+        {
+            return userId.Substring(0, maxLength) + "..."; // Display the first "maxLength" characters with ellipsis
+        }
+    }
 }
 
 <section class="container p-4">
@@ -39,13 +51,27 @@
             </div>
         </div>
         <div id="services-ouptut" class="ms-4 d-grid container">
+            <!-- Toast for copy to clipboard -->
+            <div class="toast" id="copiedToast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="mr-auto">Id Copied &nbsp;</strong>
+                    <button type="button" class="ml-2 mb-1 close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    The Patient Id has been copied to the clipboard.
+                </div>
+            </div>
             <div class="row">
                 @if (!Model.IsNullOrEmpty() && Model.Count > 0)
                 {
                     foreach (var patient in @Model)
                     {
-                        <div class="card-body primary-border rounded w-25 m-3 p-3">
-                            <p>Id: @patient.Id </p>
+                        <div class="patient-card card-body primary-border rounded m-3 p-3">
+                            <i class="fa-regular fa-user">&nbsp;</i>
+                            <span title="@patient.Id">Id: @TruncateUserId(patient.Id, 28) &nbsp;</span>
+                            <button title="Copy to clipoard" class="btn btn-primary" onclick="copyToClipboard('@patient.Id')"><i class="fa-solid fa-copy fs-6"></i></button>
                             <ul>
                                 <li>Gender: @patient.Gender</li>
                                 <li>First Name: @patient.FName</li>
@@ -70,22 +96,43 @@
 
 @section Scripts {
   <script>
-      // Variable to track the dropdown state
+  
+   function copyToClipboard(text) {
+           const el = document.createElement('textarea');
+           el.value = text;
+           document.body.appendChild(el);
+           el.select();
+           document.execCommand('copy');
+           document.body.removeChild(el);
+   
+           const toastElement = document.getElementById('copiedToast');
+           const toast = new bootstrap.Toast(toastElement);
+           toast.show();
+   
+ 
+           const closeBtn = toastElement.querySelector('.close');
+           closeBtn.addEventListener('click', function () {
+               toast.hide();
+           });
+   
+           setTimeout(function () {
+               toast.hide();
+           }, 2000); 
+       }
+  
+      //Blur background effect
       let isDropdownOpen = false;
   
-      // Function to blur the content
       function blurContent() {
           const content = document.querySelector('#services-ouptut');
           content.classList.add('blur');
       }
   
-      // Function to remove the blur class from the content
       function unblurContent() {
           const content = document.querySelector('#services-ouptut');
           content.classList.remove('blur');
       }
   
-      // Add a click event listener to the button to toggle the blur effect
       const dropdownButton = document.querySelector('.dropdown-toggle');
       const dropdownMenu = document.querySelector('.dropdown-menu');
   

@@ -1,4 +1,6 @@
+using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Text;
 using MediScreenFront.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -11,7 +13,7 @@ public class AccountController : Controller
 {
     private readonly HttpClient _apiClient = new()
     {
-        BaseAddress = new Uri("https://localhost:44337")
+        BaseAddress = new Uri("https://localhost:7192")
     };
 
     // Registration Action
@@ -55,7 +57,7 @@ public class AccountController : Controller
 
     private async Task<bool> UserExists(string userName, string email)
     {
-        var response = await _apiClient.GetAsync($"api/Auth/userExists?userName={userName}&email={email}");
+        var response = await _apiClient.GetAsync($"api/Auth/UserExists?userName={userName}&email={email}");
         return response.IsSuccessStatusCode;
     }
 
@@ -72,13 +74,24 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            var encodedPassword = System.Web.HttpUtility.UrlEncode(model.Password);
+            // Create a dictionary to hold the request parameters
+            var requestParams = new Dictionary<string, string>
+            {
+                { "username", model.UserName },
+                { "password", model.Password }
+            };
 
-            // Send a GET request to the API to perform user login
-            HttpResponseMessage response = await _apiClient.GetAsync($"api/Auth/login?username={model.UserName}&password={encodedPassword}");
+            _apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            string json = JsonConvert.SerializeObject(model);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _apiClient.PostAsync("api/Auth/login", content);
 
             if (!response.IsSuccessStatusCode)
             {
+                // Log the response content for debugging purposes
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseContent);
+
                 ModelState.AddModelError(string.Empty, "Login failed.");
             }
             else
@@ -98,8 +111,8 @@ public class AccountController : Controller
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                     {
-                        new Claim(ClaimTypes.Name, model.UserName),
-                        new Claim(ClaimTypes.Role, "User")
+                        new(ClaimTypes.Name, model.UserName),
+                        new(ClaimTypes.Role, "User")
                     }, CookieAuthenticationDefaults.AuthenticationScheme)));
 
                     // Redirect to a protected area or dashboard
