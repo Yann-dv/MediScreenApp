@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace MediScreenFront.Models;
+namespace MediScreenApi.Models;
 
 public class Patient
 {

@@ -1,10 +1,7 @@
-using AspNetCore.Identity.MongoDbCore.Models;
-using MongoDbGenericRepository.Attributes;
+using Microsoft.AspNetCore.Identity;
 
 namespace MediScreenApi.Models;
 
-[CollectionName("Roles")]
-public class ApplicationRole : MongoIdentityRole<Guid>
+public class ApplicationRole : IdentityRole<Guid>
 {
- 
 }

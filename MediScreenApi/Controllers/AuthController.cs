@@ -4,6 +4,7 @@ using System.Text;
 using MediScreenApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MediScreenApi.Controllers;
@@ -22,24 +23,53 @@ public class AuthController : ControllerBase
         _userManager = userManager;
         _signInManager = signInManager;
     }
-
+    
+        
     [HttpGet]
-    [Route("user")]
-    public async Task<IActionResult> GetUserById([FromQuery] string id)
+    [Route("GetAllUsers")]
+    public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetAllUsers()
     {
-        var user = await _userManager.FindByIdAsync(id);
+        var users = new List<ApplicationUser>();
 
-        if (user == null)
+        if (_userManager.Users == null || !_userManager.Users.Any())
         {
             return NotFound();
         }
 
-        return Ok(user);
+        return await _userManager.Users.ToListAsync();
     }
+    
+    [HttpPost]
+    [Route("register")]
+    public async Task<IActionResult> Register(RegisterViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = model.UserName,
+                Email = model.Email
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(result.Errors);
+            }
+        }
+
+        return BadRequest();
+    }
+    
     
     [HttpGet]
     [Route("userExists")]
-    public async Task<IActionResult> UserExists([FromQuery] string userName, [FromQuery] string email)
+    public async Task<IActionResult> UserExists(string userName, string email)
     {
         var user = await _userManager.FindByNameAsync(userName);
 
@@ -58,42 +88,19 @@ public class AuthController : ControllerBase
         return Ok(false);
     }
     
-    [HttpPost]
-    [Route("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
-    {
-        var user = new ApplicationUser
-        {
-            UserName = model.UserName,
-            Email = model.Email
-        };
-
-        var result = await _userManager.CreateAsync(user, model.Password);
-
-        if (!result.Succeeded)
-        {
-            return BadRequest(result.Errors);
-        }
-
-        await _signInManager.SignInAsync(user, false);
-
-        return Ok();
-    }
     
-    [HttpGet]
+    [HttpPost]
     [Route("login")]
-    public async Task<IActionResult> Login(
-        [FromQuery] string username,
-        [FromQuery] string password)
+    public async Task<IActionResult> Login([FromBody] LoginViewModel model)
     {
-        var user = await _userManager.FindByNameAsync(username);
+        var user = await _userManager.FindByNameAsync(model.UserName);
 
         if (user == null)
         {
             return BadRequest("Invalid credentials");
         }
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+        var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 
         if (!result.Succeeded)
         {
@@ -106,7 +113,7 @@ public class AuthController : ControllerBase
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is the MediScreen Secret key for authentication)"));
+        var signingKey = new SymmetricSecurityKey("this is the MediScreen Secret key for authentication)"u8.ToArray());
 
         var token = new JwtSecurityToken(
             issuer: "https://localhost:5001",
@@ -121,5 +128,14 @@ public class AuthController : ControllerBase
             token = new JwtSecurityTokenHandler().WriteToken(token),
             expiration = token.ValidTo
         });
+        
+    }
+    
+    [HttpPost]
+    [Route("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return Ok();
     }
 }

@@ -1,4 +1,4 @@
-namespace MediScreenApi.Controllers;
+namespace MediScreenApi.Models;
 
 public class RegisterViewModel
 {
