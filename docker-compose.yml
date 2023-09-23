@@ -1,6 +1,40 @@
 version: '3.8'
 services:
 
+  ### Mediscreen Database container
+  mediscreen-db-container:
+    image: mediscreen-db:latest
+    container_name: mediscreen-db-container
+    build:
+      context: . # Point to the root directory
+      dockerfile: MediScreenDockerizedDB/Dockerfile
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: Y
+      SA_USER: sa
+      SA_PASSWORD: Password+123
+      MYSQL_DATABASE: MediScreenDb
+      MYSQL_ROOT_HOST: "%"
+    networks:
+      - mediscreen-network
+  
+  ### Api container
+  api:
+    image: api
+    container_name: api-container
+    environment:
+      "MONGODB_CONNECTIONSTRING": "mongodb+srv://MediscreenUser:BnIkKqZYxjNHbOwR@cluster0.inh05rr.mongodb.net"
+    depends_on:
+      - mediscreen-db-container
+    build:
+        context: . # Point to the root directory
+        dockerfile: MediScreenApi/Dockerfile
+    ports:
+      - "600:80"
+    networks:
+      -  mediscreen-network
+      
   ### Mediscreeen container
   mediscreen:
     image: mediscreen
@@ -12,21 +46,6 @@ services:
       - "8081:80"
     networks:
       -  mediscreen-network
-  
-  ### Api container
-  api:
-    image: api
-    container_name: api-container
-    environment:
-      "MONGODB_CONNECTIONSTRING": "mongodb+srv://MediscreenUser:BnIkKqZYxjNHbOwR@cluster0.inh05rr.mongodb.net"
-    build:
-        context: . # Point to the root directory
-        dockerfile: MediScreenApi/Dockerfile
-    ports:
-      - "600:80"
-    networks:
-      -  mediscreen-network
-
 
 networks:
   mediscreen-network:
