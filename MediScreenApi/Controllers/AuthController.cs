@@ -97,7 +97,7 @@ public class AuthController : ControllerBase
 
         if (user == null)
         {
-            return BadRequest("Invalid credentials");
+            return NotFound("User not found");
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
