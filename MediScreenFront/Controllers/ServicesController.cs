@@ -77,6 +77,8 @@ public class ServicesController : Controller
     public IActionResult CreatePatient(Patient patient)
     {
         var patients = new List<Patient>();
+        var newGuid = Guid.NewGuid();
+        patient.Id = newGuid.ToString();
         try
         {
             using (var response = new HttpClient().PostAsync(_apiUri + "/CreatePatient", new StringContent(JsonConvert.SerializeObject(patient), Encoding.UTF8, "application/json")))

@@ -66,6 +66,15 @@ body {
     margin: 10px 0;
 }
 
+.hide {
+    display: none;
+}
+
+.submenu{
+    margin-left: 5rem !important;
+    width: 40vw !important;
+}
+
 /* Custom CSS to style the toast */
 .toast {
     width: 80%;

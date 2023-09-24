@@ -22,16 +22,17 @@
     <div class="services-container d-flex">
         <div class="services-form">
             <!-- Dropend buttons -->
-            <div class="btn-group dropend my-2">
-                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">           
+            <div class="btn-group">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     Patients
                 </button>
                 <ul class="dropdown-menu my-2 bg-secondary">
                     <li>
                         <div class="dropdown-item">
                             <h3>List all patients</h3>
-                            @using (Html.BeginForm("ListPatients", "Services", FormMethod.Post, new { @class="mx-4" }))
+                            @using (Html.BeginForm("ListPatients", "Services", FormMethod.Post, new { @class = "mx-4" }))
                             {
+                                @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-primary my-2">List all patients</button>
                             }
                         </div>
@@ -41,11 +42,42 @@
                             <h3>Find a patient</h3>
                             @using (Html.BeginForm("GetOnePatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
                             {
+                                @Html.AntiForgeryToken()
                                 <div class="form-group">
                                     <input type="text" class="form-control" id="query" name="query" placeholder="Enter a query">
-                                </div>    
-                                <button type="submit" class="btn btn-primary my-2">Search</button>}
+                                </div>
+                                <button type="submit" class="btn btn-primary my-2">Search</button>
+                            }
                         </div>
+                    </li>
+                    <li>
+                       <div class="dropdown-item dropend">
+                           <h3>Create patient</h3>
+                           <button class="btn btn-primary my-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                               Create form
+                           </button>
+                           <ul class="dropdown-menu bg-secondary submenu">
+                               <li>
+                                   <div class="dropdown-item">
+                                        <h3>New patient</h3>
+                                       @using (Html.BeginForm("CreatePatient", "Services", FormMethod.Post, new { @class = "mx-5" }))
+                                       {
+                                           @Html.ValidationSummary()
+                                           @Html.AntiForgeryToken()
+                                           <div class="form-group">
+                                               <input type="text" class="form-control" id="fname" placeholder="First Name">
+                                               <input type="text" class="form-control" id="lname" placeholder="Last Name">
+                                               <input type="text" class="form-control" id="dob" placeholder="Date of Birth">
+                                               <input type="text" class="form-control" id="gender" placeholder="Gender">
+                                               <input type="text" class="form-control" id="address" placeholder="Address">
+                                               <input type="text" class="form-control" id="phone" placeholder="Phone">
+                                           </div>
+                                           <button type="submit" class="btn btn-primary my-2">Create</button>
+                                       }
+                                   </div>
+                               </li>
+                           </ul>
+                       </div>
                     </li>
                 </ul>
             </div>
@@ -71,7 +103,9 @@
                         <div class="patient-card card-body primary-border rounded m-3 p-3">
                             <i class="fa-regular fa-user">&nbsp;</i>
                             <span title="@patient.Id">Id: @TruncateUserId(patient.Id, 28) &nbsp;</span>
-                            <button title="Copy to clipoard" class="btn btn-primary" onclick="copyToClipboard('@patient.Id')"><i class="fa-solid fa-copy fs-6"></i></button>
+                            <button title="Copy to clipoard" class="btn btn-primary" onclick="copyToClipboard('@patient.Id')">
+                                <i class="fa-solid fa-copy fs-6"></i>
+                            </button>
                             <ul>
                                 <li>Gender: @patient.Gender</li>
                                 <li>First Name: @patient.FName</li>
@@ -95,7 +129,12 @@
 </section>
 
 @section Scripts {
-  <script>
+    <script>
+  
+  function displayPatientCreationForm() {
+             const dropdownMenu = document.querySelector('.dropdown-submenu');
+              dropdownMenu.classList.toggle('hide');  
+  }
   
    function copyToClipboard(text) {
            const el = document.createElement('textarea');
@@ -153,5 +192,4 @@
           }
       });
   </script>
-
 }

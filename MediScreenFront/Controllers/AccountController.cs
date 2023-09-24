@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
@@ -91,8 +92,12 @@ public class AccountController : Controller
                 // Log the response content for debugging purposes
                 var responseContent = await response.Content.ReadAsStringAsync();
                 Console.WriteLine(responseContent);
-
-                ModelState.AddModelError(string.Empty, "Login failed.");
+                if(response.StatusCode == HttpStatusCode.NotFound)
+                    ModelState.AddModelError(string.Empty, "Login failed: user not found. ");
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Login failed: wrong username or password.");
+                }
             }
             else
             {
