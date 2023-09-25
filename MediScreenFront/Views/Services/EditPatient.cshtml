@@ -23,7 +23,7 @@
                 <option value="F">F</option>
             </select>
             <label for="Dob">Date of birth:</label>
-            <input type="date" class="form-control" id="Dob" name="Dob" value="@Model.Dob" placeholder="Date of birth">
+            <input type="date" class="form-control" id="Dob" name="Dob" value="@Model.Dob.ToString("yyyy-MM-dd")" placeholder="Date of birth">
             <input type="text" class="form-control" id="FName" name="FName" value="@Model.FName" placeholder="First Name">
             <input type="text" class="form-control" id="LName" name="LName" value="@Model.LName" placeholder="Last Name">
             <input type="text" class="form-control" id="Address" name="Address" value="@Model.Address" placeholder="Address">

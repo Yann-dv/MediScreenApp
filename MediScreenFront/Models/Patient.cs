@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MediScreenFront.Models;
 

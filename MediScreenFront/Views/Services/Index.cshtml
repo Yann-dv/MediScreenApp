@@ -52,7 +52,7 @@
                     </li>
                     <li>
                         <div class="dropdown-item dropend">
-                            <h5>Create patient</h5>
+                            <h5>Create a patient</h5>
                             <button class="btn btn-primary my-2 dropdown-toggle mx-4" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                                 Create form
                             </button>
@@ -86,7 +86,7 @@
                     </li>
                     <li>
                         <div class="dropdown-item">
-                            <h5>Edit patient</h5>
+                            <h5>Edit a patient</h5>
                             @using (Html.BeginForm("SearchPatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
                             {
                                 @Html.ValidationSummary()
@@ -94,10 +94,27 @@
                                 <div class="form-group">
                                     <input type="text" class="form-control" id="SearchPatientId" name="searchId" placeholder="Patient Id">
                                 </div>
-                                <button type="submit" class="btn btn-primary">Search</button>
+                                <button type="submit" class="btn btn-primary my-2">Search</button>
                             }
                         </div>
                     </li>
+                    <li>
+                        <div class="dropdown-item">
+                            <h5>Delete a patient</h5>
+                            @using (Html.BeginForm("DeletePatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                            {
+                                @Html.ValidationSummary()
+                                @Html.AntiForgeryToken()
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="DeletePatientId" name="id" placeholder="Patient Id">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                </div>
+                                <button type="submit" class="btn btn-danger my-2">Delete</button>
+                            }
+                        </div>
+                    </li>
+
+                    
                 </ul>
             </div>
         </div>
@@ -143,6 +160,19 @@
                     @ViewBag.PatientUpdatedConfirmation
                 </div>
             }
+            
+             @if (ViewBag.PatientDeleted == true)
+             {
+                <div class="alert alert-success" id="confirmation-message">
+                    @ViewBag.PatientDeletedConfirmation
+                </div>
+             }
+             else if (ViewBag.PatientDeleted == false)
+             {
+                <div class="alert alert-danger" id="confirmation-message">
+                    @ViewBag.PatientDeletedConfirmation
+                </div>
+             }
 
             <div class="row">
                 @if (!Model.IsNullOrEmpty() && Model.Count > 0)

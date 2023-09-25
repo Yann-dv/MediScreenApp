@@ -222,7 +222,7 @@ public class ServicesController : Controller
 
                         if (patient != null)
                         {
-                            patient.Dob = Convert.ToDateTime(patient.Dob.Date.ToShortDateString());
+                            patient.Dob.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
                             return View("EditPatient", patient);
                         }
                     }
@@ -240,5 +240,37 @@ public class ServicesController : Controller
 
         // If patient is not found or an error occurs, redirect back to the Index view
         return RedirectToAction("Index");
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeletePatient(string id)
+    {
+        try
+        {
+            using (var response = new HttpClient().DeleteAsync(_apiUri + "/DeletePatient/" + id))
+            {
+                if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    ViewBag.StatusCode = response.Result.StatusCode;
+                    ViewBag.PatientDeleted = true;
+                    ViewBag.PatientDeletedConfirmation = "Patient successfully deleted.";
+                }
+                else
+                {
+                    ViewBag.StatusCode = response.Result.StatusCode;
+                    ViewBag.PatientDeleted = false;
+                    ViewBag.PatientDeletedConfirmation = "Patient deletion failed.";
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            ViewBag.StatusCode = e.Message;
+            ViewBag.PatientDeleted = false;
+            ViewBag.PatientDeletedConfirmation = "Patient deletion failed.";
+        }
+
+        return View("Index");
     }
 }
