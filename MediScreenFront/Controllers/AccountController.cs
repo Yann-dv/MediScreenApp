@@ -39,7 +39,7 @@ public class AccountController : Controller
             else
             {
                 // Send a POST request to your API to register the user
-                HttpResponseMessage response = await _apiClient.PostAsJsonAsync("api/Auth/register", model);
+                HttpResponseMessage response = await _apiClient.PostAsJsonAsync("api/Auth/Register", model);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -85,7 +85,7 @@ public class AccountController : Controller
             _apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             string json = JsonConvert.SerializeObject(model);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _apiClient.PostAsync("api/Auth/login", content);
+            HttpResponseMessage response = await _apiClient.PostAsync("api/Auth/Login", content);
 
             if (!response.IsSuccessStatusCode)
             {

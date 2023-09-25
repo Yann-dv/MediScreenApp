@@ -130,12 +130,4 @@ public class AuthController : ControllerBase
         });
         
     }
-    
-    [HttpPost]
-    [Route("Logout")]
-    public async Task<IActionResult> Logout()
-    {
-        await _signInManager.SignOutAsync();
-        return Ok();
-    }
 }
