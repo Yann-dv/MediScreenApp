@@ -1,0 +1,34 @@
+@model Patient
+
+@{
+    ViewBag.Title = "Edit Patient";
+}
+
+<section class="container pt-4">
+    <h2>Edit Patient</h2>
+    
+    <a href="@Url.Action("Index", "Services")" class="btn btn-secondary mb-3">Back</a>
+    
+    @using (Html.BeginForm("UpdatePatient", "Services", FormMethod.Post, new { @class = "mx-5" }))
+    {
+        @Html.ValidationSummary()
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <label for="Id">Patient Id:</label>
+            <input type="text" class="form-control" id="Id" name="Id" value="@Model.Id" readonly>
+            <!-- Include other fields to update here -->
+            <label for="Gender">Gender:</label>
+            <select name="Gender" id="Gender" class="form-control">
+                <option value="H">H</option>
+                <option value="F">F</option>
+            </select>
+            <label for="Dob">Date of birth:</label>
+            <input type="date" class="form-control" id="Dob" name="Dob" value="@Model.Dob" placeholder="Date of birth">
+            <input type="text" class="form-control" id="FName" name="FName" value="@Model.FName" placeholder="First Name">
+            <input type="text" class="form-control" id="LName" name="LName" value="@Model.LName" placeholder="Last Name">
+            <input type="text" class="form-control" id="Address" name="Address" value="@Model.Address" placeholder="Address">
+            <input type="text" class="form-control" id="Phone" name="Phone" value="@Model.Phone" placeholder="Phone">
+        </div>
+        <button type="submit" class="btn btn-primary my-2">Update</button>
+    }
+</section>
