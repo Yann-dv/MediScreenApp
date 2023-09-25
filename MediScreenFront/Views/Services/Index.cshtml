@@ -65,12 +65,17 @@
                                            @Html.ValidationSummary()
                                            @Html.AntiForgeryToken()
                                            <div class="form-group">
-                                               <input type="text" class="form-control" id="fname" placeholder="First Name">
-                                               <input type="text" class="form-control" id="lname" placeholder="Last Name">
-                                               <input type="text" class="form-control" id="dob" placeholder="Date of Birth">
-                                               <input type="text" class="form-control" id="gender" placeholder="Gender">
-                                               <input type="text" class="form-control" id="address" placeholder="Address">
-                                               <input type="text" class="form-control" id="phone" placeholder="Phone">
+                                               <label for="Gender">Gender</label>
+                                                     <select name="Gender" id="Gender" class="form-control">
+                                                        <option value='H'>H</option>
+                                                        <option value='F'>F</option>
+                                                     </select>
+                                               <label for="Dob">Date of birth</label>
+                                               <input type="date" class="form-control" id="Dob" name="Dob" placeholder="Date of Birth">
+                                               <input type="text" class="form-control" id="FName" name="FName" placeholder="First Name">
+                                               <input type="text" class="form-control" id="LName" name="LName" placeholder="Last Name">
+                                               <input type="text" class="form-control" id="Address" name="Address" placeholder="Address">
+                                               <input type="text" class="form-control" id="Phone" name="Phone" placeholder="Phone">
                                            </div>
                                            <button type="submit" class="btn btn-primary my-2">Create</button>
                                        }
@@ -83,6 +88,8 @@
             </div>
         </div>
         <div id="services-ouptut" class="ms-4 d-grid container">
+            <!-------------------------------------->
+            <!-- Toasts group -->
             <!-- Toast for copy to clipboard -->
             <div class="toast" id="copiedToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header">
@@ -95,6 +102,15 @@
                     The Patient Id has been copied to the clipboard.
                 </div>
             </div>
+            <!--End of Toasts groupd -->
+            <!-------------------------------------->
+            @if (ViewBag.PatientCreatedConfirmation != null)
+            {
+                <div class="alert alert-success" id="confirmation-message">
+                    @ViewBag.PatientCreatedConfirmation
+                </div>
+            }
+                
             <div class="row">
                 @if (!Model.IsNullOrEmpty() && Model.Count > 0)
                 {
@@ -130,11 +146,24 @@
 
 @section Scripts {
     <script>
-  
+   
   function displayPatientCreationForm() {
              const dropdownMenu = document.querySelector('.dropdown-submenu');
               dropdownMenu.classList.toggle('hide');  
   }
+  
+  
+      document.addEventListener('readystatechange', function () {
+          var confirmationMessage = $("#confirmation-message");
+                    
+                    if (confirmationMessage.length > 0) {
+                        confirmationMessage.fadeIn();
+          
+                        setTimeout(function () {
+                            confirmationMessage.fadeOut();
+                        }, 5000);
+                    }
+  });
   
    function copyToClipboard(text) {
            const el = document.createElement('textarea');

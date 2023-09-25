@@ -77,27 +77,62 @@ public class ServicesController : Controller
     public IActionResult CreatePatient(Patient patient)
     {
         var patients = new List<Patient>();
-        var newGuid = Guid.NewGuid();
-        patient.Id = newGuid.ToString();
+        patient.Id = "IdToBeOverridedInApi";
+        
+        if (!ModelState.IsValid)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid datas provided.");
+            return View("Index", patients);
+        }
+        
+        // Log request data for debugging purposes
+        Console.WriteLine("Request Data: " + JsonConvert.SerializeObject(patient));
         try
         {
             using (var response = new HttpClient().PostAsync(_apiUri + "/CreatePatient", new StringContent(JsonConvert.SerializeObject(patient), Encoding.UTF8, "application/json")))
             {
                 if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
                 {
+                    ViewBag.StatusCode = response.Result.StatusCode;
+                    //Retrieve the new created patient
                     var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
-                    var deserializedObject = JsonConvert.DeserializeObject<Patient>(apiResponseObject);
-
-                    patient = deserializedObject;
-                    if (patient != null) patients.Add(patient);
+                    if(apiResponseObject.Contains("Patient successfully created: ", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var getPatientId = apiResponseObject.Replace("Patient successfully created: ", "");
+                        Console.WriteLine(getPatientId);
+                        using (var res = new HttpClient().GetAsync(_apiUri + "/getOnePatient?query=" + getPatientId))
+                        {
+                            if (res.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                            {
+                                var getPatientResponseObj = res.Result.Content.ReadAsStringAsync().Result;
+                                var deserializedObject = JsonConvert.DeserializeObject<List<Patient>>(getPatientResponseObj);
+                                patients = deserializedObject;
+                                ViewBag.PatientCreated = true;
+                            }
+                            else
+                            {
+                                ViewBag.StatusCode = response.Result.StatusCode;
+                                patients = new List<Patient>();
+                            }
+                        }
+                    }
                 }
                 else
+                {
                     ViewBag.StatusCode = response.Result.StatusCode;
+                    // Log response data for debugging purposes
+                    Console.WriteLine("Response Data: " + response.Result.Content.ReadAsStringAsync().Result);
+                }
             }
         }
         catch (System.Exception e)
         {
             ViewBag.StatusCode = e.Message;
+        }
+        
+        if (ViewBag.StatusCode == System.Net.HttpStatusCode.OK && ViewBag.PatientCreated == true)
+        {
+            ViewBag.PatientCreatedConfirmation = "Patient successfully created.";
         }
 
         return View("Index", patients);
