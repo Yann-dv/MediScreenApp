@@ -158,5 +158,35 @@ public class PatientsController : ControllerBase
             return StatusCode(500, "Internal server error + " + ex.Message);
         }
     }
+    
+    [HttpDelete]
+    [Route("DeletePatient/{id}")]
+    public async Task<IActionResult> DeletePatient(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return BadRequest("Patient Id cannot be empty.");
+        }
+
+        try
+        {
+            var existingPatient = await _context.Patients.FindAsync(id);
+
+            if (existingPatient == null)
+            {
+                return NotFound("Patient not found.");
+            }
+
+            _context.Patients.Remove(existingPatient);
+            await _context.SaveChangesAsync();
+
+            return Ok("Patient successfully deleted.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(500, "Internal server error + " + ex.Message);
+        }
+    }
 
 }
