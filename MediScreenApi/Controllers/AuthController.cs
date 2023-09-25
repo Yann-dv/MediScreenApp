@@ -40,7 +40,7 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost]
-    [Route("register")]
+    [Route("Register")]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
         if (ModelState.IsValid)
@@ -68,7 +68,7 @@ public class AuthController : ControllerBase
     
     
     [HttpGet]
-    [Route("userExists")]
+    [Route("UserExists")]
     public async Task<IActionResult> UserExists(string userName, string email)
     {
         var user = await _userManager.FindByNameAsync(userName);
@@ -90,7 +90,7 @@ public class AuthController : ControllerBase
     
     
     [HttpPost]
-    [Route("login")]
+    [Route("Login")]
     public async Task<IActionResult> Login([FromBody] LoginViewModel model)
     {
         var user = await _userManager.FindByNameAsync(model.UserName);
@@ -132,7 +132,7 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost]
-    [Route("logout")]
+    [Route("Logout")]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();

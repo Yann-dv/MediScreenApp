@@ -38,7 +38,7 @@ public class PatientsController : ControllerBase
     /// </summary>
     /// <returns>A list of patients.</returns>
     [HttpGet]
-    [Route("getOnePatient")]
+    [Route("GetOnePatient")]
     public async Task<ActionResult<IEnumerable<Patient>>> GetOnePatient(string query)
     {
         if (string.IsNullOrWhiteSpace(query))
@@ -103,4 +103,60 @@ public class PatientsController : ControllerBase
 
         return Ok("Patient successfully created: " + patient.Id);
     }
+
+    [HttpPut]
+    [Route("UpdatePatient/{id}")]
+    public async Task<IActionResult> UpdatePatient(string id, Patient updatedPatient)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return BadRequest("Patient Id cannot be empty.");
+        }
+
+        try
+        {
+            var existingPatient = await _context.Patients.FindAsync(id);
+
+            if (existingPatient == null)
+            {
+                return NotFound("Patient not found.");
+            }
+
+            // Update only the fields that have been changed
+            if (!string.IsNullOrWhiteSpace(updatedPatient.FName))
+            {
+                existingPatient.FName = updatedPatient.FName;
+            }
+            if (!string.IsNullOrWhiteSpace(updatedPatient.LName))
+            {
+                existingPatient.LName = updatedPatient.LName;
+            }
+            if (updatedPatient.Gender != '\0')
+            {
+                existingPatient.Gender = updatedPatient.Gender;
+            }
+            if (updatedPatient.Dob != DateTime.MinValue)
+            {
+                existingPatient.Dob = updatedPatient.Dob;
+            }
+            if (!string.IsNullOrWhiteSpace(updatedPatient.Address))
+            {
+                existingPatient.Address = updatedPatient.Address;
+            }
+            if (!string.IsNullOrWhiteSpace(updatedPatient.Phone))
+            {
+                existingPatient.Phone = updatedPatient.Phone;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Patient successfully updated.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(500, "Internal server error + " + ex.Message);
+        }
+    }
+
 }
