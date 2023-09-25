@@ -76,12 +76,16 @@ public class ServicesController : Controller
     [HttpPost]
     public IActionResult CreatePatient(Patient patient)
     {
+        //Reset viewbag
+        ViewBag.PatientCreated = false;
+
         var patients = new List<Patient>();
         patient.Id = "IdToBeOverridedInApi";
         
         if (!ModelState.IsValid)
         {
             ModelState.AddModelError(string.Empty, "Invalid datas provided.");
+            ViewBag.PatientCreatedConfirmation = "Patient creation failed: invalid datas provided.";
             return View("Index", patients);
         }
         
@@ -133,6 +137,10 @@ public class ServicesController : Controller
         if (ViewBag.StatusCode == System.Net.HttpStatusCode.OK && ViewBag.PatientCreated == true)
         {
             ViewBag.PatientCreatedConfirmation = "Patient successfully created.";
+        }
+        else
+        {
+            ViewBag.PatientCreatedConfirmation = "Patient creation failed.";
         }
 
         return View("Index", patients);

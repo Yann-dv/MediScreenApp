@@ -1,5 +1,6 @@
 :root{
     --primary-color: #00849a;
+    --active-bg-color: #338bff;
 }
 
 a:hover {
@@ -92,4 +93,8 @@ body {
 
 .patient-card {
     width: 32%; !important;
+}
+
+.active-link, .nav-link:hover {
+    background-color: var(--active-bg-color);
 }

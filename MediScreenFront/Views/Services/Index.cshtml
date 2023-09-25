@@ -17,7 +17,7 @@
     }
 }
 
-<section class="container p-4">
+<section class="container pt-4">
     <h2>@ViewData["Title"]</h2>
     <div class="services-container d-flex">
         <div class="services-form">
@@ -29,7 +29,7 @@
                 <ul class="dropdown-menu my-2 bg-secondary">
                     <li>
                         <div class="dropdown-item">
-                            <h3>List all patients</h3>
+                            <h5>List all patients</h5>
                             @using (Html.BeginForm("ListPatients", "Services", FormMethod.Post, new { @class = "mx-4" }))
                             {
                                 @Html.AntiForgeryToken()
@@ -39,7 +39,7 @@
                     </li>
                     <li>
                         <div class="dropdown-item">
-                            <h3>Find a patient</h3>
+                            <h5>Find a patient</h5>
                             @using (Html.BeginForm("GetOnePatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
                             {
                                 @Html.AntiForgeryToken()
@@ -52,14 +52,14 @@
                     </li>
                     <li>
                        <div class="dropdown-item dropend">
-                           <h3>Create patient</h3>
+                           <h5>Create patient</h5>
                            <button class="btn btn-primary my-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                                Create form
                            </button>
                            <ul class="dropdown-menu bg-secondary submenu">
                                <li>
                                    <div class="dropdown-item">
-                                        <h3>New patient</h3>
+                                        <h5>New patient</h5>
                                        @using (Html.BeginForm("CreatePatient", "Services", FormMethod.Post, new { @class = "mx-5" }))
                                        {
                                            @Html.ValidationSummary()
@@ -104,11 +104,21 @@
             </div>
             <!--End of Toasts groupd -->
             <!-------------------------------------->
-            @if (ViewBag.PatientCreatedConfirmation != null)
+            @if (ViewBag.PatientCreated == true)
             {
                 <div class="alert alert-success" id="confirmation-message">
                     @ViewBag.PatientCreatedConfirmation
                 </div>
+            }
+            else if(ViewBag.PatientCreated == false)
+            {
+                <div class="alert alert-danger" id="confirmation-message">
+                    @ViewBag.PatientCreatedConfirmation
+                </div>
+            }
+            else
+            {
+                
             }
                 
             <div class="row">
