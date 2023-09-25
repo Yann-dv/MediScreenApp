@@ -71,10 +71,24 @@ public class PatientsController : ControllerBase
     }
     
     [HttpPost]
+    [Route("CreatePatient")]
     public async Task<ActionResult<Patient>> PostPatient(Patient patient)
     {
         try
         {
+            //Override Id with new Guid
+            var newGuid = Guid.NewGuid();
+            patient.Id = newGuid.ToString();
+            if (patient.Gender != 'H' || patient.Gender != 'F')
+            {
+                //Replace any other value with 'U' for unknown
+                patient.Gender = 'U';
+            }
+            
+            // Set null values to default values.
+            patient.Address ??= "No address provided.";
+            patient.Phone ??= "No phone number provided.";
+            
             await using (_context)
             {
                 _context.Patients.Add(patient);
@@ -87,6 +101,6 @@ public class PatientsController : ControllerBase
             return StatusCode(500, "Internal server error + " + ex.Message);
         }
 
-        return Ok();
+        return Ok("Patient successfully created: " + patient.Id);
     }
 }
