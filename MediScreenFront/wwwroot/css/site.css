@@ -92,7 +92,22 @@ body {
 }
 
 .patient-card {
-    width: 32%; !important;
+    max-width: 42%; !important;
+    position: relative;
+}
+
+.card-id{
+    margin-left: 1.2rem;
+    width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
 }
 
 .active-link, .nav-link:hover {

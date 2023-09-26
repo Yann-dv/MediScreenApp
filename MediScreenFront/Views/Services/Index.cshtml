@@ -66,10 +66,16 @@
                                             @Html.AntiForgeryToken()
                                             <div class="form-group">
                                                 <label for="Gender">Gender</label>
-                                                <select name="Gender" id="Gender" class="form-control">
-                                                    <option value='H'>H</option>
-                                                    <option value='F'>F</option>
-                                                </select>
+                                                <div class="form-control">
+                                                    <div class="form-check">
+                                                        <input type="radio" id="GenderH" name="Gender" value="H" class="form-check-input" checked>
+                                                        <label for="GenderH" class="form-check-label">Male (H)</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input type="radio" id="GenderF" name="Gender" value="F" class="form-check-input">
+                                                        <label for="GenderF" class="form-check-label">Female (F)</label>
+                                                    </div>
+                                                </div>
                                                 <label for="Dob">Date of birth</label>
                                                 <input type="date" class="form-control" id="Dob" name="Dob" placeholder="Date of Birth">
                                                 <input type="text" class="form-control" id="FName" name="FName" placeholder="First Name">
@@ -181,8 +187,8 @@
                     {
                         <div class="patient-card card-body primary-border rounded m-3 p-3">
                             <i class="fa-regular fa-user">&nbsp;</i>
-                            <span title="@patient.Id">Id: @TruncateUserId(patient.Id, 28) &nbsp;</span>
-                            <button title="Copy to clipoard" class="btn btn-primary" onclick="copyToClipboard('@patient.Id')">
+                            <p class="card-id" title="@patient.Id">Id: @patient.Id &nbsp;</p>
+                            <button title="Copy to clipoard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id')">
                                 <i class="fa-solid fa-copy fs-6"></i>
                             </button>
                             <ul>
