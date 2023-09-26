@@ -71,9 +71,16 @@ body {
     display: none;
 }
 
-.submenu{
+.submenu {
     margin-left: 3rem !important;
-    width: 40vw !important;
+}
+
+.submenu-item {
+    width: 30vw;
+}
+
+.submenu-item .form-group .form-control {
+    margin-bottom: .2rem;
 }
 
 /* Custom CSS to style the toast */
