@@ -72,7 +72,7 @@ body {
 }
 
 .submenu{
-    margin-left: 5rem !important;
+    margin-left: 3rem !important;
     width: 40vw !important;
 }
 
@@ -97,4 +97,9 @@ body {
 
 .active-link, .nav-link:hover {
     background-color: var(--active-bg-color);
+}
+
+.dropdown-menu.show {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr;
 }

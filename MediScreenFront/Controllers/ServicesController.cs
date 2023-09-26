@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using System.Text;
 using MediScreenFront.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +32,7 @@ public class ServicesController : Controller
         {
             using (var response = new HttpClient().GetAsync(_apiUri + "/getOnePatient?query=" + query))
             {
-                if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
                     var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
                     var deserializedObject = JsonConvert.DeserializeObject<List<Patient>>(apiResponseObject);
@@ -42,7 +43,7 @@ public class ServicesController : Controller
                     ViewBag.StatusCode = response.Result.StatusCode;
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
         }
@@ -57,7 +58,7 @@ public class ServicesController : Controller
         {
             using (var response = new HttpClient().GetAsync(_apiUri + "/GetAllPatients"))
             {
-                if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
                     var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
                     var deserializedObject = JsonConvert.DeserializeObject<List<Patient>>(apiResponseObject);
@@ -68,7 +69,7 @@ public class ServicesController : Controller
                     ViewBag.StatusCode = response.Result.StatusCode;
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
         }
@@ -100,7 +101,7 @@ public class ServicesController : Controller
             using (var response = new HttpClient().PostAsync(_apiUri + "/CreatePatient",
                        new StringContent(JsonConvert.SerializeObject(patient), Encoding.UTF8, "application/json")))
             {
-                if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
                     //Retrieve the new created patient
@@ -112,7 +113,7 @@ public class ServicesController : Controller
                         Console.WriteLine(getPatientId);
                         using (var res = new HttpClient().GetAsync(_apiUri + "/GetOnePatient?query=" + getPatientId))
                         {
-                            if (res.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                            if (res.Result.StatusCode == HttpStatusCode.OK)
                             {
                                 var getPatientResponseObj = res.Result.Content.ReadAsStringAsync().Result;
                                 var deserializedObject =
@@ -136,12 +137,12 @@ public class ServicesController : Controller
                 }
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
         }
 
-        if (ViewBag.StatusCode == System.Net.HttpStatusCode.OK && ViewBag.PatientCreated == true)
+        if (ViewBag.StatusCode == HttpStatusCode.OK && ViewBag.PatientCreated == true)
         {
             ViewBag.PatientCreatedConfirmation = "Patient successfully created.";
         }
@@ -175,7 +176,7 @@ public class ServicesController : Controller
             using (var response = new HttpClient().PutAsync(_apiUri + "/UpdatePatient/" + patient.Id,
                        new StringContent(JsonConvert.SerializeObject(patient), Encoding.UTF8, "application/json")))
             {
-                if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
                     ViewBag.PatientUpdated = true;
@@ -185,17 +186,15 @@ public class ServicesController : Controller
                     patients.Add(patient);
                     return View("Index", patients);
                 }
-                else
-                {
-                    ViewBag.StatusCode = response.Result.StatusCode;
-                    // Log response data for debugging purposes
-                    Console.WriteLine("Response Data: " + response.Result.Content.ReadAsStringAsync().Result);
 
-                    ViewBag.PatientUpdatedConfirmation = "Patient update failed.";
-                }
+                ViewBag.StatusCode = response.Result.StatusCode;
+                // Log response data for debugging purposes
+                Console.WriteLine("Response Data: " + response.Result.Content.ReadAsStringAsync().Result);
+
+                ViewBag.PatientUpdatedConfirmation = "Patient update failed.";
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
             ViewBag.PatientUpdatedConfirmation = "Patient update failed.";
@@ -212,7 +211,7 @@ public class ServicesController : Controller
         {
             using (var response = new HttpClient().GetAsync(_apiUri + "/GetOnePatient?query=" + searchId))
             {
-                if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
                     var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
                     var deserializedObject = JsonConvert.DeserializeObject<List<Patient>>(apiResponseObject);
@@ -233,7 +232,7 @@ public class ServicesController : Controller
                 }
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
         }
@@ -250,7 +249,7 @@ public class ServicesController : Controller
         {
             using (var response = new HttpClient().DeleteAsync(_apiUri + "/DeletePatient/" + id))
             {
-                if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
                     ViewBag.PatientDeleted = true;
@@ -264,7 +263,7 @@ public class ServicesController : Controller
                 }
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
             ViewBag.PatientDeleted = false;
