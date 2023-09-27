@@ -18,23 +18,23 @@
         @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
     </div>
     <div class="form-group col-md-4">
-        @Html.LabelFor(model => model.Password)
-        <div class="input-group">
-            @Html.PasswordFor(model => model.Password, new { @class = "form-control", id = "password-input" })
-            <span class="input-group-btn">
-                <button type="button" class="btn btn-default" id="toggle-password"><i class="fa-solid fa-eye"></i></button>
-            </span>
+            @Html.LabelFor(model => model.Password)
+            <div class="input-group">
+                @Html.PasswordFor(model => model.Password, new { @class = "form-control", id = "password-input" })
+                <span class="input-group-btn" style="position: absolute; right: 6px; top: 0; z-index: 10">
+                    <button type="button" class="btn btn-default" id="toggle-password"><i class="fa-solid fa-eye"></i></button>
+                </span>
+            </div>
         </div>
-    </div>
     <div class="form-group col-md-4">
-        @Html.LabelFor(model => model.ConfirmPassword)
-        <div class="input-group">
-            @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control", id = "confirm-password-input" })
-            <span class="input-group-btn">
-                <button type="button" class="btn btn-default" id="toggle-confirm-password"><i class="fa-solid fa-eye"></i></button>
-            </span>
+            @Html.LabelFor(model => model.ConfirmPassword)
+            <div class="input-group">
+                @Html.PasswordFor(model => model.Password, new { @class = "form-control", id = "confirm-password-input" })
+                <span class="input-group-btn" style="position: absolute; right: 6px; top: 0; z-index: 10">
+                    <button type="button" class="btn btn-default" id="toggle-confirm-password"><i class="fa-solid fa-eye"></i></button>
+                </span>
+            </div>
         </div>
-    </div>
     <button type="submit" class="btn btn-primary my-2">Register</button>
 }
 
@@ -50,6 +50,7 @@
             // Function to toggle password visibility
             function togglePasswordVisibility() {
                 var passwordInput = document.getElementById("password-input");
+                var confirmPasswordInput = document.getElementById("confirm-password-input");
 
                 if (passwordInput.type === "password") {
                     passwordInput.type = "text";
