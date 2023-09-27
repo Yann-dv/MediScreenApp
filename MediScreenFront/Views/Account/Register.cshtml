@@ -19,15 +19,67 @@
     </div>
     <div class="form-group col-md-4">
         @Html.LabelFor(model => model.Password)
-        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+        <div class="input-group">
+            @Html.PasswordFor(model => model.Password, new { @class = "form-control", id = "password-input" })
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" id="toggle-password"><i class="fa-solid fa-eye"></i></button>
+            </span>
+        </div>
     </div>
     <div class="form-group col-md-4">
-            @Html.LabelFor(model => model.ConfirmPassword)
-            @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
+        @Html.LabelFor(model => model.ConfirmPassword)
+        <div class="input-group">
+            @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control", id = "confirm-password-input" })
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" id="toggle-confirm-password"><i class="fa-solid fa-eye"></i></button>
+            </span>
+        </div>
     </div>
     <button type="submit" class="btn btn-primary my-2">Register</button>
 }
 
+
 <div class="m-4">
     <p>You already have an account ? <a href="/Account/Login">Login</a></p>
 </div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Function to toggle password visibility
+            function togglePasswordVisibility() {
+                var passwordInput = document.getElementById("password-input");
+
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                } else {
+                    passwordInput.type = "password";
+                }
+            }
+
+            // Function to toggle confirm password visibility
+            function toggleConfirmPasswordVisibility() {
+                var confirmPasswordInput = document.getElementById("confirm-password-input");
+
+                if (confirmPasswordInput.type === "password") {
+                    confirmPasswordInput.type = "text";
+                } else {
+                    confirmPasswordInput.type = "password";
+                }
+            }
+
+            // Toggle password visibility when the password toggle button is clicked
+            var togglePasswordButton = document.getElementById("toggle-password");
+            togglePasswordButton.addEventListener("click", function () {
+                togglePasswordVisibility();
+            });
+
+            // Toggle confirm password visibility when the confirm password toggle button is clicked
+            var toggleConfirmPasswordButton = document.getElementById("toggle-confirm-password");
+            toggleConfirmPasswordButton.addEventListener("click", function () {
+                toggleConfirmPasswordVisibility();
+            });
+        });
+    </script>
+}
