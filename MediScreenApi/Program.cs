@@ -36,12 +36,17 @@ builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 {
     string mongoDbConnectionString = Environment.GetEnvironmentVariable("MEDISCREEN_MONGODB_CONNECTIONSTRING");
 
-    if (string.IsNullOrEmpty(mongoDbConnectionString))
+    if (string.IsNullOrEmpty(mongoDbConnectionString) || string.IsNullOrWhiteSpace(mongoDbConnectionString))
     {
         Console.WriteLine("MongoDB connection string is missing or empty.");
         // Handle the missing connection string as needed.
         // throw new ApplicationException("MongoDB connection string is missing or empty.");
     }
+    else
+    {
+        mongoDbConnectionString = "mongodb://mongo:27017";
+    }
+    
 
     return new MongoClient(mongoDbConnectionString);
 });
