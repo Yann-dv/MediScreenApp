@@ -1,0 +1,26 @@
+@model Note
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createNoteModalTitle">Create a note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("CreateNote", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                {
+                    @Html.HiddenFor(model => model.PatientId)
+                    @Html.ValidationSummary()
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="PatientId" name="PatientId" placeholder="Patient Id" value="@Model.PatientId" readonly>
+                        <input type="text" class="form-control" id="DoctorId" name="DoctorId" placeholder="Doctor Id">
+                        <input type="date" class="form-control" id="VisitDate" name="VisitDate" placeholder="Visit Date">
+                        <textarea class="form-control" id="NoteText" name="NoteText" placeholder="Note Text"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary my-2">Create</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                }
+            </div>
+        </div>
+    </div>
