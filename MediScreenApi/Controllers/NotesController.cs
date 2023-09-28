@@ -19,9 +19,10 @@ namespace MediScreenApi.Controllers
             _notesCollection = database.GetCollection<Note>("Notes");
         }
 
-        // GET api/notes
         [HttpGet]
-        public ActionResult<IEnumerable<Note>> GetNotes()
+        [Route("GetAllNotes")]
+
+        public ActionResult<IEnumerable<Note>> GetAllNotes()
         {
             try
             {
@@ -33,9 +34,28 @@ namespace MediScreenApi.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        
+        [HttpGet]
+        [Route("GetPatientNotes/{patientId}")]
+        public IActionResult GetPatientNotes(string patientId)
+        {
+            try
+            {
+                var notes = _notesCollection.Find(n => n.PatientId == patientId).ToList();
+                if (notes == null)
+                {
+                    return NotFound();
+                }
+                return Ok(notes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
-        // GET api/notes/{id}
-        [HttpGet("{id}", Name = "GetNote")]
+        [HttpGet]
+        [Route("GetNote/{id}")]
         public ActionResult<Note> GetNoteById(string id)
         {
             try
@@ -53,8 +73,8 @@ namespace MediScreenApi.Controllers
             }
         }
 
-        // POST api/notes
         [HttpPost]
+        [Route("CreateNote")]
         public IActionResult CreateNote([FromBody] Note note)
         {
             try
@@ -68,8 +88,8 @@ namespace MediScreenApi.Controllers
             }
         }
 
-        // PUT api/notes/{id}
-        [HttpPut("{id}")]
+        [HttpPut]
+        [Route("UpdateNote/{id}")]
         public IActionResult UpdateNote(string id, [FromBody] Note updatedNote)
         {
             try
@@ -95,8 +115,8 @@ namespace MediScreenApi.Controllers
             }
         }
 
-        // DELETE api/notes/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route("DeleteNote/{id}")]
         public IActionResult DeleteNoteById(string id)
         {
             try
