@@ -2,7 +2,7 @@ namespace MediScreenFront.Models;
 
 public class Note
 {
-    public string Id { get; set; }
+    public string? Id { get; set; }
     
     public string PatientId { get; set; }
     

@@ -363,9 +363,16 @@ public class ServicesController : Controller
 
         if (!ModelState.IsValid)
         {
-            ModelState.AddModelError(string.Empty, "Invalid data provided.");
+            // Capture validation errors
+            var validationErrors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            // Add the validation errors to ViewBag
+            ViewBag.ValidationErrors = validationErrors;
+
             ViewBag.NoteCreatedConfirmation = "Note creation failed: invalid data provided.";
-            return PartialView("_CreateNoteForm", note);
         }
 
         // Log request data for debugging purposes
@@ -376,14 +383,14 @@ public class ServicesController : Controller
             using (var response = new HttpClient().PostAsync(_apiNotesUri + "/CreateNote",
                        new StringContent(JsonConvert.SerializeObject(note), Encoding.UTF8, "application/json")))
             {
-                if (response.Result.StatusCode == HttpStatusCode.OK)
+                if (response.Result.StatusCode == HttpStatusCode.Created)
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
                     ViewBag.NoteCreated = true;
                     ViewBag.NoteCreatedConfirmation = "Note successfully created.";
 
                     // Redirect back to the Index action or any other desired action
-                    return RedirectToAction("Index");
+                    return View("Index", Tuple.Create(patients, notes));
                 }
 
                 ViewBag.StatusCode = response.Result.StatusCode;
@@ -402,4 +409,46 @@ public class ServicesController : Controller
         return View("Index", Tuple.Create(patients, notes));
     }
 
+    [HttpDelete]
+    public async Task<IActionResult> DeleteNote(string id)
+    {
+        try
+        {
+            using (var client = new HttpClient())
+            {
+                // Construct the API endpoint URL
+                var apiUrl = $"{_apiNotesUri}/DeleteNote/{id}";
+
+                // Send the DELETE request
+                var response = await client.DeleteAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle a successful deletion
+                    return Ok("Note deleted successfully");
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    // Handle the case where the note with the given ID was not found
+                    return NotFound("Note not found");
+                }
+                else
+                {
+                    // Handle other error cases
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    return BadRequest($"Bad Request: {errorMessage}");
+                }
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            // Handle HTTP request exceptions, log errors, and return an appropriate response
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            // Handle other exceptions, log errors, and return an appropriate response
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
 }

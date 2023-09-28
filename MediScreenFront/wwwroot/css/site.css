@@ -124,3 +124,7 @@ body {
     display: grid !important;
     grid-template-columns: 1fr 1fr 1fr;
 }
+
+section.container {
+    margin-bottom: 4rem;
+}

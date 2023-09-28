@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using MediScreenApi.Models;
+using MongoDB.Bson;
 
 namespace MediScreenApi.Controllers
 {
@@ -72,21 +73,30 @@ namespace MediScreenApi.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
+        
         [HttpPost]
         [Route("CreateNote")]
         public IActionResult CreateNote([FromBody] Note note)
         {
             try
             {
+                // Generate a new ObjectId for the note
+                note.Id = ObjectId.GenerateNewId().ToString();
+
+                // Insert the new note into the MongoDB collection
                 _notesCollection.InsertOne(note);
-                return CreatedAtRoute("GetNote", new { id = note.Id }, note);
+
+                // Return a success status code (e.g., 201 Created) without a response body
+                return StatusCode(201); // 201 Created
             }
             catch (Exception ex)
             {
+                // Return an error status code (e.g., 500 Internal Server Error) with an error message
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        
 
         [HttpPut]
         [Route("UpdateNote/{id}")]

@@ -160,51 +160,51 @@
             <!-------------------------------------->
             @if (ViewBag.PatientCreated == true)
             {
-                <div class="alert alert-success" id="confirmation-message">
+                <div class="alert alert-success confirmation-message">
                     @ViewBag.PatientCreatedConfirmation
                 </div>
             }
             else if (ViewBag.PatientCreated == false)
             {
-                <div class="alert alert-danger" id="confirmation-message">
+                <div class="alert alert-danger confirmation-message">
                     @ViewBag.PatientCreatedConfirmation
                 </div>
             }
 
             @if (ViewBag.PatientUpdated == true)
             {
-                <div class="alert alert-success" id="confirmation-message">
+                <div class="alert alert-success confirmation-message">
                     @ViewBag.PatientUpdatedConfirmation
                 </div>
             }
             else if (ViewBag.PatientUpdated == false)
             {
-                <div class="alert alert-danger" id="confirmation-message">
+                <div class="alert alert-danger confirmation-message">
                     @ViewBag.PatientUpdatedConfirmation
                 </div>
             }
 
             @if (ViewBag.PatientDeleted == true)
             {
-                <div class="alert alert-success" id="confirmation-message">
+                <div class="alert alert-success confirmation-message">
                     @ViewBag.PatientDeletedConfirmation
                 </div>
             }
             else if (ViewBag.PatientDeleted == false)
             {
-                <div class="alert alert-danger" id="confirmation-message">
+                <div class="alert alert-danger confirmation-message">
                     @ViewBag.PatientDeletedConfirmation
                 </div>
             }
             @if(ViewBag.NoteCreated == true)
             {
-                <div class="alert alert-success" id="confirmation-message">
+                <div class="alert alert-success confirmation-message">
                     @ViewBag.NoteCreatedConfirmation
                 </div>
             }
             else if(ViewBag.NoteCreated == false)
             {
-                <div class="alert alert-danger" id="confirmation-message">
+                <div class="alert alert-danger confirmation-message">
                     @ViewBag.NoteCreatedConfirmation
                 </div>
             }
@@ -242,6 +242,17 @@
                 }
             </div>
             <div class="row notes">
+            @if (ViewBag.ValidationErrors != null && ViewBag.ValidationErrors.Count > 0)
+            {
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach (var error in ViewBag.ValidationErrors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>
+                </div>
+            }
                 @if (!Model.Item2.IsNullOrEmpty() && Model.Item2.Count > 0)
                 {
                     <h3 class="m-3 text-decoration-underline">Notes</h3>
@@ -254,7 +265,7 @@
                                 <button title="Delete note" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
                                     <i class="fa-solid fa-copy fs-6"></i>
                                 </button>
-                                <button title="Delete note" class="btn btn-danger" onclick="deleteNote()">
+                                <button title="Delete note" class="btn btn-danger" onclick="confirmDelete('@note.Id')" data-note-id="@note.Id">
                                     <i class="fa-solid fa-x"></i>
                                 </button>
                             </div>
@@ -274,22 +285,37 @@
 
 @section Scripts {
     <script>
+     function confirmDelete(id) {
+            if (confirm("Are you sure you want to delete this note?")) {
+                // Make an AJAX request to delete the note
+                deleteNoteRequest(id); // Pass noteId to the function
+            }
+        }
     
-    function deleteNote() {
-        const noteId = document.querySelector('.card-id').innerHTML;
-        const deleteNoteForm = document.createElement('form');
-        deleteNoteForm.setAttribute('method', 'post');
-        deleteNoteForm.setAttribute('action', '/Services/DeleteNote');
-        deleteNoteForm.setAttribute('class', 'hide');
-        const noteIdInput = document.createElement('input');
-        noteIdInput.setAttribute('type', 'text');
-        noteIdInput.setAttribute('name', 'id');
-        noteIdInput.setAttribute('value', noteId);
-        deleteNoteForm.appendChild(noteIdInput);
-        document.body.appendChild(deleteNoteForm);
-        deleteNoteForm.submit();
-    }
-    
+        function deleteNoteRequest(id) {
+            fetch(`/Services/DeleteNote/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then((response) => {
+                if (response.ok) {
+                    // Handle success by refreshing the page
+                    window.location.reload();
+                } else {
+                    // Handle error (e.g., display an error message)
+                    console.error("Error deleting note:", response.status, response.statusText);
+            
+                    // Display the error message to users (you can customize this part)
+                    const errorMessageElement = $(".confirmation-message");
+                    errorMessageElement.textContent = "Failed to delete the note. Please try again.";
+                }
+            })
+            .catch((error) => {
+                console.error("Error deleting note:", error);
+            });
+        }
    
   function displayPatientCreationForm() {
              const dropdownMenu = document.querySelector('.dropdown-submenu');
@@ -298,7 +324,7 @@
   
   
       document.addEventListener('readystatechange', function () {
-          var confirmationMessage = $("#confirmation-message");
+          var confirmationMessage = $(".confirmation-message");
                     
                     if (confirmationMessage.length > 0) {
                         confirmationMessage.fadeIn();
