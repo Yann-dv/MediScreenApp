@@ -83,14 +83,8 @@ body {
     margin-bottom: .2rem;
 }
 
-/* Custom CSS to style the toast */
-.toast {
-    width: 80%;
-}
-
-/* Add a transition for the toast */
 .toast.show {
-    transition: opacity 0.2s, transform 0.2s;
+    transition: opacity 0.4s, transform 0.4s;
 }
 
 /* CSS to blur the background when the service dropdown is open */

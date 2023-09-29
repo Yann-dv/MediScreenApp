@@ -388,9 +388,8 @@ public class ServicesController : Controller
                     ViewBag.StatusCode = response.Result.StatusCode;
                     ViewBag.NoteCreated = true;
                     ViewBag.NoteCreatedConfirmation = "Note successfully created.";
-
-                    // Redirect back to the Index action or any other desired action
-                    return View("Index", Tuple.Create(patients, notes));
+                    
+                    return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
                 }
 
                 ViewBag.StatusCode = response.Result.StatusCode;
