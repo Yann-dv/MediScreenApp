@@ -197,16 +197,17 @@
                     @ViewBag.PatientDeletedConfirmation
                 </div>
             }
-            @if(ViewBag.NoteCreated == true)
+           
+            @if (TempData["SuccessMessage"] != null)
             {
-                <div class="alert alert-success confirmation-message">
-                    @ViewBag.NoteCreatedConfirmation
+                <div id="successMessage" class="alert alert-success">
+                    @TempData["SuccessMessage"]
                 </div>
             }
-            else if(ViewBag.NoteCreated == false)
+            else if (TempData["ErrorMessage"] != null)
             {
-                <div class="alert alert-danger confirmation-message">
-                    @ViewBag.NoteCreatedConfirmation
+                <div id="errorMessage" class="alert alert-danger">
+                    @TempData["ErrorMessage"]
                 </div>
             }
 
@@ -223,6 +224,9 @@
                             <div class="card-buttons-group">
                                 <button title="Copy to clipoard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
                                     <i class="fa-solid fa-copy fs-6"></i>
+                                </button>
+                                <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
+                                    <i class="fa-solid fa-eye"></i>
                                 </button>
                                 <button type="button" title="Add a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNoteModal-@patient.Id"><i class="fa-solid fa-plus"></i></button>
                             </div>
@@ -286,6 +290,12 @@
 
 @section Scripts {
     <script>
+    
+   function redirectToGetPatientNotes(patientId) {
+       window.location.href = '/Services/GetPatientNotes?getNotesByPatientId=' + patientId;
+   }
+
+    
      function confirmDelete(id, patientId) {
             if (confirm("Are you sure you want to delete this note?")) {
                 // Make an AJAX request to delete the note
@@ -336,6 +346,30 @@
                         }, 5000);
                     }
   });
+   
+   setTimeout(function () {
+       var successMessage = document.getElementById('successMessage');
+       var errorMessage = document.getElementById('errorMessage');
+   
+       if (successMessage) {
+           successMessage.style.transition = 'opacity 1s ease-in-out';
+           successMessage.style.opacity = 0;
+       }
+       if (errorMessage) {
+           errorMessage.style.transition = 'opacity 1s ease-in-out';
+           errorMessage.style.opacity = 0;
+       }
+   
+       // Wait for the opacity transition to complete before hiding the element
+       setTimeout(function () {
+           if (successMessage) {
+               successMessage.style.display = 'none';
+           }
+           if (errorMessage) {
+               errorMessage.style.display = 'none';
+           }
+       }, 1000);
+   }, 4000);
   
    function copyToClipboard(copiedId, type) {
            const el = document.createElement('textarea');

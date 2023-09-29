@@ -387,22 +387,29 @@ public class ServicesController : Controller
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
                     ViewBag.NoteCreated = true;
-                    ViewBag.NoteCreatedConfirmation = "Note successfully created.";
                     
+                    if (ViewBag.NoteCreated == true)
+                    {
+                        TempData["SuccessMessage"] = "Note successfully created.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Note creation failed.";
+                    }
+
                     return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
                 }
 
                 ViewBag.StatusCode = response.Result.StatusCode;
                 // Log response data for debugging purposes
+                TempData["ErrorMessage"] = "Note creation failed.";
                 Console.WriteLine("Response Data: " + response.Result.Content.ReadAsStringAsync().Result);
-
-                ViewBag.NoteCreatedConfirmation = "Note creation failed.";
             }
         }
         catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
-            ViewBag.NoteCreatedConfirmation = "Note creation failed.";
+            TempData["ErrorMessage"] = "Note creation failed.";
         }
 
         return View("Index", Tuple.Create(patients, notes));
@@ -423,30 +430,31 @@ public class ServicesController : Controller
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Handle a successful deletion
+                    TempData["SuccessMessage"] = "Note deleted successfully";
                     return Ok("Note deleted successfully");
                 }
                 else if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    // Handle the case where the note with the given ID was not found
+                    TempData["ErrorMessage"] = "Note not found";
                     return NotFound("Note not found");
                 }
                 else
                 {
                     // Handle other error cases
                     var errorMessage = await response.Content.ReadAsStringAsync();
+                    TempData["ErrorMessage"] = $"Bad Request: {errorMessage}";
                     return BadRequest($"Bad Request: {errorMessage}");
                 }
             }
         }
         catch (HttpRequestException ex)
         {
-            // Handle HTTP request exceptions, log errors, and return an appropriate response
+            TempData["ErrorMessage"] = $"Internal server error: {ex.Message}";
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
         catch (Exception ex)
         {
-            // Handle other exceptions, log errors, and return an appropriate response
+            TempData["ErrorMessage"] = $"Internal server error: {ex.Message}";
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
