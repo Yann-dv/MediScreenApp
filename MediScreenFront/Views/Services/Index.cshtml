@@ -1,20 +1,8 @@
 @using Microsoft.IdentityModel.Tokens
-@model List<Patient>
+@model Tuple<List<Patient>, List<Note>?>
 
 @{
     ViewBag.Title = "Services";
-
-    string TruncateUserId(string userId, int maxLength)
-    {
-        if (userId.Length <= maxLength)
-        {
-            return userId;
-        }
-        else
-        {
-            return userId.Substring(0, maxLength) + "..."; // Display the first "maxLength" characters with ellipsis
-        }
-    }
 }
 
 <section class="container pt-4">
@@ -22,7 +10,8 @@
     <div class="services-container d-flex">
         <div class="services-form">
             <!-- Dropend buttons -->
-            <div class="btn-group dropdown">
+            <!-- Patients -->
+            <div class="btn-group dropdown my-1">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     Patients
                 </button>
@@ -119,18 +108,49 @@
                             }
                         </div>
                     </li>
-
-                    
+                </ul>
+            </div>
+            <!-- Notes -->
+            <div class="btn-group dropdown my-1">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    Notes
+                </button>
+                <ul class="dropdown-menu my-2 bg-secondary">
+                    <li>
+                        <div class="dropdown-item">
+                            <h5>List all notes</h5>
+                            @using (Html.BeginForm("GetAllNotes", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-primary my-2">Get all notes</button>
+                            }
+                        </div>
+                    </li>
+                    <li>
+                        <div class="dropdown-item">
+                            <h5>See patient notes</h5>
+                            @using (Html.BeginForm("GetPatientNotes", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="getNotesByPatientId" name="getNotesByPatientId" placeholder="Patient Id">
+                                </div>
+                                <button type="submit" class="btn btn-primary my-2">Search notes</button>
+                            }
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
+
         <div id="services-ouptut" class="ms-4 d-grid container">
             <!-------------------------------------->
             <!-- Toasts group -->
             <!-- Toast for copy to clipboard -->
             <div class="toast" id="copiedToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header">
-                    <strong class="mr-auto">Id Copied &nbsp;</strong>
+                    <strong class="mr-auto">Copied</strong>
+                    <small class="text-muted">At @DateTime.Now.ToString("HH:mm:ss")</small>
                     <button type="button" class="ml-2 mb-1 close" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -143,54 +163,79 @@
             <!-------------------------------------->
             @if (ViewBag.PatientCreated == true)
             {
-                <div class="alert alert-success" id="confirmation-message">
+                <div class="alert alert-success confirmation-message">
                     @ViewBag.PatientCreatedConfirmation
                 </div>
             }
             else if (ViewBag.PatientCreated == false)
             {
-                <div class="alert alert-danger" id="confirmation-message">
+                <div class="alert alert-danger confirmation-message">
                     @ViewBag.PatientCreatedConfirmation
                 </div>
             }
-            
+
             @if (ViewBag.PatientUpdated == true)
             {
-                <div class="alert alert-success" id="confirmation-message">
+                <div class="alert alert-success confirmation-message">
                     @ViewBag.PatientUpdatedConfirmation
                 </div>
             }
             else if (ViewBag.PatientUpdated == false)
             {
-                <div class="alert alert-danger" id="confirmation-message">
+                <div class="alert alert-danger confirmation-message">
                     @ViewBag.PatientUpdatedConfirmation
                 </div>
             }
-            
-             @if (ViewBag.PatientDeleted == true)
-             {
-                <div class="alert alert-success" id="confirmation-message">
-                    @ViewBag.PatientDeletedConfirmation
-                </div>
-             }
-             else if (ViewBag.PatientDeleted == false)
-             {
-                <div class="alert alert-danger" id="confirmation-message">
-                    @ViewBag.PatientDeletedConfirmation
-                </div>
-             }
 
-            <div class="row">
-                @if (!Model.IsNullOrEmpty() && Model.Count > 0)
+            @if (ViewBag.PatientDeleted == true)
+            {
+                <div class="alert alert-success confirmation-message">
+                    @ViewBag.PatientDeletedConfirmation
+                </div>
+            }
+            else if (ViewBag.PatientDeleted == false)
+            {
+                <div class="alert alert-danger confirmation-message">
+                    @ViewBag.PatientDeletedConfirmation
+                </div>
+            }
+           
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div id="successMessage" class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            else if (TempData["ErrorMessage"] != null)
+            {
+                <div id="errorMessage" class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
+            <div class="row patients">
+                @if (!Model.Item1.IsNullOrEmpty() && Model.Item1.Count > 0)
                 {
-                    foreach (var patient in @Model)
+                    <h3 class="m-3 text-decoration-underline">Patients</h3>
+                    foreach (var patient in @Model.Item1)
                     {
-                        <div class="patient-card card-body primary-border rounded m-3 p-3">
+                        <div class="patient-card card-body primary-border rounded m-3 p-3" 
+                             style="max-width: @(Model.Item2.IsNullOrEmpty() ? "42%" : "100%")">
                             <i class="fa-regular fa-user">&nbsp;</i>
                             <p class="card-id" title="@patient.Id">Id: @patient.Id &nbsp;</p>
-                            <button title="Copy to clipoard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id')">
-                                <i class="fa-solid fa-copy fs-6"></i>
-                            </button>
+                            <div class="card-buttons-group">
+                                <button title="Copy to clipoard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
+                                    <i class="fa-solid fa-copy fs-6"></i>
+                                </button>
+                                <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <button type="button" title="Add a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNoteModal-@patient.Id"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <div class="modal fade" id="createNoteModal-@patient.Id" tabindex="-1" aria-labelledby="createNoteModalTitle" aria-hidden="true">
+                                @await Html.PartialAsync("_CreateNoteForm", new Note { PatientId = patient.Id })
+                            </div>
+
                             <ul>
                                 <li>Gender: @patient.Gender</li>
                                 <li>First Name: @patient.FName</li>
@@ -202,19 +247,97 @@
                         </div>
                     }
                 }
-                else
+            </div>
+            <div class="row notes">
+            @if (ViewBag.ValidationErrors != null && ViewBag.ValidationErrors.Count > 0)
+            {
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach (var error in ViewBag.ValidationErrors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>
+                </div>
+            }
+                @if (!Model.Item2.IsNullOrEmpty() && Model.Item2.Count > 0)
                 {
-                    <div class="card-body primary-border rounded w-25 m-3 p-3">
-                        <p>No data found</p>
-                    </div>
+                    <h3 class="m-3 text-decoration-underline">Notes</h3>
+                    foreach (var note in @Model.Item2)
+                    {
+                        <div class="note-card card-body primary-border rounded m-3 p-3">
+                            <i class="fa-solid fa-list">&nbsp;</i>
+                            <p class="card-id" title="@note.Id">Id: @note.Id &nbsp;</p>
+                            <div class="card-buttons-group">
+                                <button title="Copy note id" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
+                                    <i class="fa-solid fa-copy fs-6"></i>
+                                </button>
+                                <button title="Edit a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#updateNoteModal-@note.Id">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button title="Delete note" class="btn btn-danger" onclick="confirmDelete('@note.Id', '@note.PatientId')" data-note-id="@note.Id">
+                                    <i class="fa-solid fa-x"></i>
+                                </button>
+                                <div class="modal fade" id="updateNoteModal-@note.Id" tabindex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
+                                    @await Html.PartialAsync("_EditNoteForm", note)
+                                </div>
+                            </div>
+                            <ul>
+                                <li>Doctor Id: @note.DoctorId</li>
+                                <li>Patient Id: @note.PatientId</li>
+                                <li>Visited on: @note.VisitDate</li>
+                                <li>Note: @note.NoteText</li>
+                            </ul>
+                        </div>
+                    }
                 }
             </div>
         </div>
     </div>
 </section>
 
+
+
 @section Scripts {
     <script>
+    
+   function redirectToGetPatientNotes(patientId) {
+       window.location.href = '/Services/GetPatientNotes?getNotesByPatientId=' + patientId;
+   }
+
+    
+     function confirmDelete(id, patientId) {
+            if (confirm("Are you sure you want to delete this note?")) {
+                // Make an AJAX request to delete the note
+                deleteNoteRequest(id, patientId);
+            }
+        }
+    
+        function deleteNoteRequest(id, patientId) {
+            fetch(`/Services/DeleteNote/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then((response) => {
+                if (response.ok) {
+                    // Handle success by refreshing the page
+                    //window.location.reload();
+                    window.location.href = "GetPatientNotes?getNotesByPatientId=" + patientId;
+                } else {
+                    // Handle error (e.g., display an error message)
+                    console.error("Error deleting note:", response.status, response.statusText);
+            
+                    // Display the error message to users (you can customize this part)
+                    const errorMessageElement = $(".confirmation-message");
+                    errorMessageElement.textContent = "Failed to delete the note. Please try again.";
+                }
+            })
+            .catch((error) => {
+                console.error("Error deleting note:", error);
+            });
+        }
    
   function displayPatientCreationForm() {
              const dropdownMenu = document.querySelector('.dropdown-submenu');
@@ -223,7 +346,7 @@
   
   
       document.addEventListener('readystatechange', function () {
-          var confirmationMessage = $("#confirmation-message");
+          var confirmationMessage = $(".confirmation-message");
                     
                     if (confirmationMessage.length > 0) {
                         confirmationMessage.fadeIn();
@@ -233,17 +356,44 @@
                         }, 5000);
                     }
   });
+   
+   setTimeout(function () {
+       var successMessage = document.getElementById('successMessage');
+       var errorMessage = document.getElementById('errorMessage');
+   
+       if (successMessage) {
+           successMessage.style.transition = 'opacity 1s ease-in-out';
+           successMessage.style.opacity = 0;
+       }
+       if (errorMessage) {
+           errorMessage.style.transition = 'opacity 1s ease-in-out';
+           errorMessage.style.opacity = 0;
+       }
+   
+       // Wait for the opacity transition to complete before hiding the element
+       setTimeout(function () {
+           if (successMessage) {
+               successMessage.style.display = 'none';
+           }
+           if (errorMessage) {
+               errorMessage.style.display = 'none';
+           }
+       }, 1000);
+   }, 4000);
   
-   function copyToClipboard(text) {
+   function copyToClipboard(copiedId, type) {
            const el = document.createElement('textarea');
-           el.value = text;
+           el.value = copiedId, type;
            document.body.appendChild(el);
            el.select();
            document.execCommand('copy');
            document.body.removeChild(el);
    
            const toastElement = document.getElementById('copiedToast');
+           const toastContent = toastElement.querySelector('.toast-body');
            const toast = new bootstrap.Toast(toastElement);
+           toastElement.style.setProperty('max-width', '100% !important');
+           toastContent.innerHTML = `The ${type} Id has been copied to the clipboard.`;
            toast.show();
    
  
@@ -254,7 +404,7 @@
    
            setTimeout(function () {
                toast.hide();
-           }, 2000); 
+           }, 4000); 
        }
   
       //Blur background effect
@@ -288,6 +438,6 @@
               unblurContent();
               isDropdownOpen = false;
           }
-      });
+      }); 
   </script>
 }

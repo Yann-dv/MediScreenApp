@@ -11,15 +11,19 @@ namespace MediScreenFront.Controllers;
 [Authorize]
 public class ServicesController : Controller
 {
-    private readonly string _apiUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
+    private readonly string _apiPatientsUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
         ? "http://host.docker.internal:600/api/Patients"
         : "https://localhost:7192/api/Patients";
+    
+    private readonly string _apiNotesUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
+        ? "http://host.docker.internal:600/api/Notes"
+        : "https://localhost:7192/api/Notes";
 
     public IActionResult Index(List<Patient>? patients)
     {
         if (patients != null)
         {
-            return View(patients);
+            return View(Tuple.Create(patients, new List<Note>()));
         }
 
         return View();
@@ -30,7 +34,7 @@ public class ServicesController : Controller
         var patients = new List<Patient>();
         try
         {
-            using (var response = new HttpClient().GetAsync(_apiUri + "/getOnePatient?query=" + query))
+            using (var response = new HttpClient().GetAsync(_apiPatientsUri + "/getOnePatient?query=" + query))
             {
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
@@ -48,7 +52,7 @@ public class ServicesController : Controller
             ViewBag.StatusCode = e.Message;
         }
 
-        return View("Index", patients);
+        return View("Index", Tuple.Create(patients, new List<Note>()));
     }
 
     public IActionResult ListPatients()
@@ -56,7 +60,7 @@ public class ServicesController : Controller
         var patients = new List<Patient>();
         try
         {
-            using (var response = new HttpClient().GetAsync(_apiUri + "/GetAllPatients"))
+            using (var response = new HttpClient().GetAsync(_apiPatientsUri + "/GetAllPatients"))
             {
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
@@ -74,7 +78,7 @@ public class ServicesController : Controller
             ViewBag.StatusCode = e.Message;
         }
 
-        return View("Index", patients);
+        return View("Index", Tuple.Create(patients, new List<Note>()));
     }
 
     [HttpPost]
@@ -91,14 +95,14 @@ public class ServicesController : Controller
         {
             ModelState.AddModelError(string.Empty, "Invalid datas provided.");
             ViewBag.PatientCreatedConfirmation = "Patient creation failed: invalid datas provided.";
-            return View("Index", patients);
+            return View("Index", Tuple.Create(patients, new List<Note>()));
         }
 
         // Log request data for debugging purposes
         Console.WriteLine("Request Data: " + JsonConvert.SerializeObject(patient));
         try
         {
-            using (var response = new HttpClient().PostAsync(_apiUri + "/CreatePatient",
+            using (var response = new HttpClient().PostAsync(_apiPatientsUri + "/CreatePatient",
                        new StringContent(JsonConvert.SerializeObject(patient), Encoding.UTF8, "application/json")))
             {
                 if (response.Result.StatusCode == HttpStatusCode.OK)
@@ -111,7 +115,7 @@ public class ServicesController : Controller
                     {
                         var getPatientId = apiResponseObject.Replace("Patient successfully created: ", "");
                         Console.WriteLine(getPatientId);
-                        using (var res = new HttpClient().GetAsync(_apiUri + "/GetOnePatient?query=" + getPatientId))
+                        using (var res = new HttpClient().GetAsync(_apiPatientsUri + "/GetOnePatient?query=" + getPatientId))
                         {
                             if (res.Result.StatusCode == HttpStatusCode.OK)
                             {
@@ -151,7 +155,7 @@ public class ServicesController : Controller
             ViewBag.PatientCreatedConfirmation = "Patient creation failed.";
         }
 
-        return View("Index", patients);
+        return View("Index", Tuple.Create(patients, new List<Note>()));
     }
     
     [HttpPost]
@@ -173,7 +177,7 @@ public class ServicesController : Controller
     
         try
         {
-            using (var response = new HttpClient().PutAsync(_apiUri + "/UpdatePatient/" + patient.Id,
+            using (var response = new HttpClient().PutAsync(_apiPatientsUri + "/UpdatePatient/" + patient.Id,
                        new StringContent(JsonConvert.SerializeObject(patient), Encoding.UTF8, "application/json")))
             {
                 if (response.Result.StatusCode == HttpStatusCode.OK)
@@ -184,7 +188,7 @@ public class ServicesController : Controller
                     ViewBag.PatientUpdatedConfirmation = "Patient successfully updated.";
                     var patients = new List<Patient>();
                     patients.Add(patient);
-                    return View("Index", patients);
+                    return View("Index", Tuple.Create(patients, new List<Note>()));
                 }
 
                 ViewBag.StatusCode = response.Result.StatusCode;
@@ -209,7 +213,7 @@ public class ServicesController : Controller
     {
         try
         {
-            using (var response = new HttpClient().GetAsync(_apiUri + "/GetOnePatient?query=" + searchId))
+            using (var response = new HttpClient().GetAsync(_apiPatientsUri + "/GetOnePatient?query=" + searchId))
             {
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
@@ -247,7 +251,7 @@ public class ServicesController : Controller
     {
         try
         {
-            using (var response = new HttpClient().DeleteAsync(_apiUri + "/DeletePatient/" + id))
+            using (var response = new HttpClient().DeleteAsync(_apiPatientsUri + "/DeletePatient/" + id))
             {
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
@@ -272,4 +276,224 @@ public class ServicesController : Controller
 
         return View("Index");
     }
+    
+    public IActionResult GetPatientNotes(string getNotesByPatientId)
+    {
+        var notes = new List<Note>();
+        var patients = new List<Patient>();
+
+        try
+        {
+            using (var response = new HttpClient().GetAsync(_apiPatientsUri + "/GetOnePatient?query=" + getNotesByPatientId))
+            {
+                if (response.Result.StatusCode == HttpStatusCode.OK)
+                {
+                    var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
+                    var deserializedObject = JsonConvert.DeserializeObject<List<Patient>>(apiResponseObject);
+
+                    patients = deserializedObject;
+                }
+                else
+                    ViewBag.StatusCode = response.Result.StatusCode;
+            }
+        }
+        catch (Exception e)
+        {
+            ViewBag.StatusCode = e.Message;
+        }
+        
+        try
+        {
+            using (var response = new HttpClient().GetAsync(_apiNotesUri + "/GetPatientNotes/" + getNotesByPatientId))
+            {
+                if (response.Result.StatusCode == HttpStatusCode.OK)
+                {
+                    var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
+                    var deserializedObject = JsonConvert.DeserializeObject<List<Note>>(apiResponseObject);
+
+                    notes = deserializedObject;
+                }
+                else
+                    ViewBag.StatusCode = response.Result.StatusCode;
+            }
+        }
+        catch (Exception e)
+        {
+            ViewBag.StatusCode = e.Message;
+        }
+
+        return View("Index", Tuple.Create(patients, notes));
+    }
+
+    public IActionResult GetAllNotes()
+    {
+        var notes = new List<Note>();
+        try
+        {
+            using (var response = new HttpClient().GetAsync(_apiNotesUri + "/GetAllNotes"))
+            {
+                if (response.Result.StatusCode == HttpStatusCode.OK)
+                {
+                    var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
+                    var deserializedObject = JsonConvert.DeserializeObject<List<Note>>(apiResponseObject);
+
+                    notes = deserializedObject;
+                }
+                else
+                    ViewBag.StatusCode = response.Result.StatusCode;
+            }
+        }
+        catch (Exception e)
+        {
+            ViewBag.StatusCode = e.Message;
+        }
+
+        return View("Index", Tuple.Create(new List<Patient>(), notes));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult CreateNote(Note note)
+    {
+        var patients = new List<Patient>();
+        var notes = new List<Note>();
+        // Reset ViewBag
+        ViewBag.NoteCreated = false;
+        note.Id = Guid.NewGuid().ToString("N");
+
+        if (!ModelState.IsValid)
+        {
+            // Capture validation errors
+            var validationErrors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            // Add the validation errors to ViewBag
+            ViewBag.ValidationErrors = validationErrors;
+
+            ViewBag.NoteCreatedConfirmation = "Note creation failed: invalid data provided.";
+        }
+
+        // Log request data for debugging purposes
+        Console.WriteLine("Request Data: " + JsonConvert.SerializeObject(note));
+
+        try
+        {
+            using (var response = new HttpClient().PostAsync(_apiNotesUri + "/CreateNote",
+                       new StringContent(JsonConvert.SerializeObject(note), Encoding.UTF8, "application/json")))
+            {
+                if (response.Result.StatusCode == HttpStatusCode.Created)
+                {
+                    ViewBag.StatusCode = response.Result.StatusCode;
+                    ViewBag.NoteCreated = true;
+                    
+                    if (ViewBag.NoteCreated == true)
+                    {
+                        TempData["SuccessMessage"] = "Note successfully created.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Note creation failed.";
+                    }
+
+                    return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
+                }
+
+                ViewBag.StatusCode = response.Result.StatusCode;
+                // Log response data for debugging purposes
+                TempData["ErrorMessage"] = "Note creation failed.";
+                Console.WriteLine("Response Data: " + response.Result.Content.ReadAsStringAsync().Result);
+            }
+        }
+        catch (Exception e)
+        {
+            ViewBag.StatusCode = e.Message;
+            TempData["ErrorMessage"] = "Note creation failed.";
+        }
+
+        return View("Index", Tuple.Create(patients, notes));
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteNote(string id)
+    {
+        try
+        {
+            using (var client = new HttpClient())
+            {
+                // Construct the API endpoint URL
+                var apiUrl = $"{_apiNotesUri}/DeleteNote/{id}";
+
+                // Send the DELETE request
+                var response = await client.DeleteAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Note deleted successfully";
+                    return Ok("Note deleted successfully");
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    TempData["ErrorMessage"] = "Note not found";
+                    return NotFound("Note not found");
+                }
+                else
+                {
+                    // Handle other error cases
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    TempData["ErrorMessage"] = $"Bad Request: {errorMessage}";
+                    return BadRequest($"Bad Request: {errorMessage}");
+                }
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            TempData["ErrorMessage"] = $"Internal server error: {ex.Message}";
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Internal server error: {ex.Message}";
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    public IActionResult UpdateNote(Note note)
+    {
+        ViewBag.NoteUpdated = false;
+        
+        if (!ModelState.IsValid)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid data provided.");
+            ViewBag.NoteUpdatedConfirmation = "Note update failed: invalid data provided.";
+            return View("Index", Tuple.Create(new List<Patient>(), new List<Note>()));
+        }
+
+        // Log request data for debugging purposes
+        Console.WriteLine("Request Data: " + JsonConvert.SerializeObject(note));
+    
+        try
+        {
+            using (var response = new HttpClient().PutAsync(_apiNotesUri + "/UpdateNote/" + note.Id,
+                       new StringContent(JsonConvert.SerializeObject(note), Encoding.UTF8, "application/json")))
+            {
+                if (response.Result.StatusCode == HttpStatusCode.OK)
+                {
+                   TempData["SuccessMessage"] = "Note updated successfully";
+                   return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
+
+                }
+                // Log response data for debugging purposes
+                Console.WriteLine("Response Data: " + response.Result.Content.ReadAsStringAsync().Result);
+            }
+        }
+        catch (Exception e)
+        {
+            TempData["ErrorMessage"] = $"Internal server error: {e.Message}";
+        }
+        
+        return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
+    }
+      
 }
