@@ -10,6 +10,7 @@
     <div class="services-container d-flex">
         <div class="services-form">
             <!-- Dropend buttons -->
+            <!-- Patients -->
             <div class="btn-group dropdown my-1">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     Patients
@@ -109,6 +110,7 @@
                     </li>
                 </ul>
             </div>
+            <!-- Notes -->
             <div class="btn-group dropdown my-1">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     Notes
@@ -267,12 +269,18 @@
                             <i class="fa-solid fa-list">&nbsp;</i>
                             <p class="card-id" title="@note.Id">Id: @note.Id &nbsp;</p>
                             <div class="card-buttons-group">
-                                <button title="Delete note" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
+                                <button title="Copy note id" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
                                     <i class="fa-solid fa-copy fs-6"></i>
+                                </button>
+                                <button title="Edit a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#updateNoteModal-@note.Id">
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
                                 <button title="Delete note" class="btn btn-danger" onclick="confirmDelete('@note.Id', '@note.PatientId')" data-note-id="@note.Id">
                                     <i class="fa-solid fa-x"></i>
                                 </button>
+                                <div class="modal fade" id="updateNoteModal-@note.Id" tabindex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
+                                    @await Html.PartialAsync("_EditNoteForm", note)
+                                </div>
                             </div>
                             <ul>
                                 <li>Doctor Id: @note.DoctorId</li>
@@ -287,6 +295,8 @@
         </div>
     </div>
 </section>
+
+
 
 @section Scripts {
     <script>
@@ -428,6 +438,6 @@
               unblurContent();
               isDropdownOpen = false;
           }
-      });
+      }); 
   </script>
 }

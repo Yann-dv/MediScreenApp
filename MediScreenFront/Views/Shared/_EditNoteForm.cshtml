@@ -1,0 +1,29 @@
+@model Note
+
+<!-- Edit Note Modal -->
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="editNoteModalLabel">Edit Note</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            @using (Html.BeginForm("UpdateNote", "Services", FormMethod.Post, new { @class = "mx-4" }))
+            {
+                @Html.HiddenFor(model => model.Id) <!-- Note Id -->
+                @Html.ValidationSummary()
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <input type="text" class="form-control" id="PatientId" name="PatientId" placeholder="Patient Id" value="@Model.PatientId" readonly>
+                    <input type="text" class="form-control" id="DoctorId" name="DoctorId" placeholder="Doctor Id" value="@Model.DoctorId">
+                    <input type="date" class="form-control" id="VisitDate" name="VisitDate" placeholder="Visit Date" value="@Model.VisitDate.ToString("yyyy-MM-dd")">
+                    <textarea class="form-control" id="NoteText" name="NoteText" placeholder="Note Text">@Model.NoteText</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary my-2">Update</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            }
+        </div>
+    </div>
+</div>

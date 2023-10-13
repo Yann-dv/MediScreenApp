@@ -458,4 +458,42 @@ public class ServicesController : Controller
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
+    public IActionResult UpdateNote(Note note)
+    {
+        ViewBag.NoteUpdated = false;
+        
+        if (!ModelState.IsValid)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid data provided.");
+            ViewBag.NoteUpdatedConfirmation = "Note update failed: invalid data provided.";
+            return View("Index", Tuple.Create(new List<Patient>(), new List<Note>()));
+        }
+
+        // Log request data for debugging purposes
+        Console.WriteLine("Request Data: " + JsonConvert.SerializeObject(note));
+    
+        try
+        {
+            using (var response = new HttpClient().PutAsync(_apiNotesUri + "/UpdateNote/" + note.Id,
+                       new StringContent(JsonConvert.SerializeObject(note), Encoding.UTF8, "application/json")))
+            {
+                if (response.Result.StatusCode == HttpStatusCode.OK)
+                {
+                   TempData["SuccessMessage"] = "Note updated successfully";
+                   return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
+
+                }
+                // Log response data for debugging purposes
+                Console.WriteLine("Response Data: " + response.Result.Content.ReadAsStringAsync().Result);
+            }
+        }
+        catch (Exception e)
+        {
+            TempData["ErrorMessage"] = $"Internal server error: {e.Message}";
+        }
+        
+        return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
+    }
+      
 }
