@@ -238,6 +238,7 @@
 
                             <ul>
                                 <li>Gender: @patient.Gender</li>
+                                <li>Age: @patient.Age</li>
                                 <li>First Name: @patient.FName</li>
                                 <li>Last Name: @patient.LName</li>
                                 <li>Date of Birth: @patient.Dob</li>
@@ -270,6 +271,12 @@
                             <p class="card-id" title="@note.Id">Id: @note.Id &nbsp;</p>
                             <div class="card-buttons-group">
                                 <button title="Copy note id" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
+                                                                    <i class="fa-solid fa-copy fs-6"></i>
+                                                                </button>
+                                <button title="See patient" class="btn btn-primary" onclick="redirectToGetPatientNotes('@note.PatientId')">
+                                    <i class="fa-regular fa-user fs-6"></i>
+                                </button>
+                                <button title="Delete note" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
                                     <i class="fa-solid fa-copy fs-6"></i>
                                 </button>
                                 <button title="Edit a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#updateNoteModal-@note.Id">
@@ -295,8 +302,6 @@
         </div>
     </div>
 </section>
-
-
 
 @section Scripts {
     <script>
@@ -438,6 +443,6 @@
               unblurContent();
               isDropdownOpen = false;
           }
-      }); 
+      });
   </script>
 }

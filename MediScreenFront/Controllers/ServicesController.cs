@@ -90,6 +90,7 @@ public class ServicesController : Controller
 
         var patients = new List<Patient>();
         patient.Id = "IdToBeOverridedInApi";
+        patient.Age = DateTime.Now.Year - patient.Dob.Year;
 
         if (!ModelState.IsValid)
         {
@@ -162,6 +163,7 @@ public class ServicesController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult UpdatePatient(Patient patient)
     {
+        patient.Age = DateTime.Now.Year - patient.Dob.Year;
         // Reset ViewBag
         ViewBag.PatientUpdated = false;
         
@@ -247,7 +249,7 @@ public class ServicesController : Controller
     
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult DeletePatient(string id)
+    public async Task<IActionResult> DeletePatient(string id)
     {
         try
         {
@@ -256,25 +258,23 @@ public class ServicesController : Controller
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
-                    ViewBag.PatientDeleted = true;
-                    ViewBag.PatientDeletedConfirmation = "Patient successfully deleted.";
+                    await DeleteAllPatientNotes(id);
+                    TempData["SuccessMessage"] = "Patient successfully deleted.";
                 }
                 else
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
-                    ViewBag.PatientDeleted = false;
-                    ViewBag.PatientDeletedConfirmation = "Patient deletion failed.";
+                    TempData["ErrorMessage"] = "Patient deletion failed.";
                 }
             }
         }
         catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
-            ViewBag.PatientDeleted = false;
-            ViewBag.PatientDeletedConfirmation = "Patient deletion failed.";
+            TempData["ErrorMessage"] = "Patient deletion failed.";
         }
 
-        return View("Index");
+        return RedirectToAction("Index");
     }
     
     public IActionResult GetPatientNotes(string getNotesByPatientId)
@@ -294,7 +294,10 @@ public class ServicesController : Controller
                     patients = deserializedObject;
                 }
                 else
+                {
                     ViewBag.StatusCode = response.Result.StatusCode;
+                    TempData["ErrorMessage"] = "Patient not found.";
+                }
             }
         }
         catch (Exception e)
@@ -496,4 +499,45 @@ public class ServicesController : Controller
         return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
     }
       
+    [HttpDelete]
+    public async Task<IActionResult> DeleteAllPatientNotes(string patientId)
+    {
+        try
+        {
+            using (var client = new HttpClient())
+            {
+                var apiUrl = $"{_apiNotesUri}/DeleteAllPatientNotes/{patientId}";
+
+                var response = await client.DeleteAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Notes deleted successfully";
+                    return Ok("Notes deleted successfully");
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    TempData["ErrorMessage"] = "Notes not found";
+                    return NotFound("Notes not found");
+                }
+                else
+                {
+                    // Handle other error cases
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    TempData["ErrorMessage"] = $"Bad Request: {errorMessage}";
+                    return BadRequest($"Bad Request: {errorMessage}");
+                }
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            TempData["ErrorMessage"] = $"Internal server error: {ex.Message}";
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Internal server error: {ex.Message}";
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
 }

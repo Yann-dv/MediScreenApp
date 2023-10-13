@@ -99,6 +99,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     
     private void SeedPatients()
     {
+        var calculateAgeFromDob = new CalculateAgeFromDob();
         // Check if there are any existing patients in the database
         if (!Patients.Any())
         {
@@ -107,6 +108,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 new Patient
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Age = calculateAgeFromDob.CalculateAge(new DateTime(1980, 5, 15)),
                     FName = "John",
                     LName = "Doe",
                     Dob = new DateTime(1980, 5, 15),
@@ -117,6 +119,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 new Patient
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Age =  calculateAgeFromDob.CalculateAge(new DateTime(1992, 8, 22)),
                     FName = "Jane",
                     LName = "Smith",
                     Dob = new DateTime(1992, 8, 22),
@@ -127,6 +130,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 new Patient
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Age = calculateAgeFromDob.CalculateAge(new DateTime(1975, 2, 10)),
                     FName = "Michael",
                     LName = "Johnson",
                     Dob = new DateTime(1975, 2, 10),
@@ -137,6 +141,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 new Patient
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Age = calculateAgeFromDob.CalculateAge(new DateTime(1988, 7, 5)),
                     FName = "Emily",
                     LName = "Brown",
                     Dob = new DateTime(1988, 7, 5),
@@ -147,6 +152,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 new Patient
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Age = calculateAgeFromDob.CalculateAge(new DateTime(1995, 4, 18)),
                     FName = "David",
                     LName = "Lee",
                     Dob = new DateTime(1995, 4, 18),
@@ -157,6 +163,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 new Patient
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Age = calculateAgeFromDob.CalculateAge(new DateTime(1983, 9, 30)),
                     FName = "Sarah",
                     LName = "Wilson",
                     Dob = new DateTime(1983, 9, 30),
@@ -167,6 +174,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 new Patient
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Age = calculateAgeFromDob.CalculateAge(new DateTime(1970, 12, 12)),
                     FName = "Christopher",
                     LName = "Davis",
                     Dob = new DateTime(1970, 12, 12),
@@ -177,6 +185,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 new Patient
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Age = calculateAgeFromDob.CalculateAge(new DateTime(1990, 3, 25)),
                     FName = "Olivia",
                     LName = "Anderson",
                     Dob = new DateTime(1990, 3, 25),
@@ -187,6 +196,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 new Patient
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Age = calculateAgeFromDob.CalculateAge(new DateTime(1986, 6, 8)),
                     FName = "Daniel",
                     LName = "Martinez",
                     Dob = new DateTime(1986, 6, 8),
@@ -197,6 +207,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 new Patient
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Age = calculateAgeFromDob.CalculateAge(new DateTime(1998, 1, 3)),
                     FName = "Ava",
                     LName = "Garcia",
                     Dob = new DateTime(1998, 1, 3),
@@ -209,5 +220,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
             Patients.AddRange(samplePatients);
             SaveChanges();
         }
+    }
+}
+
+internal class CalculateAgeFromDob
+{
+    public int CalculateAge(DateTime dob)
+    {
+        var today = DateTime.Today;
+        var age = today.Year - dob.Year;
+        if (dob.Date > today.AddYears(-age)) age--;
+        return age;
     }
 }

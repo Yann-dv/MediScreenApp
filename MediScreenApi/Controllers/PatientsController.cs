@@ -60,6 +60,11 @@ public class PatientsController : ControllerBase
                         EF.Functions.Like(p.Address, "%" + query + "%"))
                     .ToListAsync();
 
+                if(patients.Count < 1)
+                {
+                    return NotFound("No patients found.");
+                }
+                
                 return Ok(patients);
             }
         }
@@ -123,6 +128,10 @@ public class PatientsController : ControllerBase
             }
 
             // Update only the fields that have been changed
+            if(!string.IsNullOrWhiteSpace(updatedPatient.Age.ToString()))
+            {
+                existingPatient.Age = updatedPatient.Age;
+            }
             if (!string.IsNullOrWhiteSpace(updatedPatient.FName))
             {
                 existingPatient.FName = updatedPatient.FName;

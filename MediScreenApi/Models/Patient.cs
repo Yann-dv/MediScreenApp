@@ -8,6 +8,9 @@ public class Patient
     public string Id { get; set; }
 
     [DataMember]
+    public int Age { get; set; }
+    
+    [DataMember]
     public string FName { get; set; }
 
     [DataMember]
