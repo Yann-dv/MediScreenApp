@@ -174,5 +174,31 @@ namespace MediScreenApi.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        
+        /// <summary>
+        /// Delete all notes for a patient
+        /// </summary>
+        /// <param name="patientId"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("DeleteAllPatientNotes/{patientId}")]
+        public IActionResult DeleteAllPatientNotes(string patientId)
+        {
+            try
+            {
+                var notes = _notesCollection.Find(n => n.PatientId == patientId).ToList();
+                if (notes == null)
+                {
+                    return NotFound();
+                }
+
+                _notesCollection.DeleteMany(n => n.PatientId == patientId);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }
