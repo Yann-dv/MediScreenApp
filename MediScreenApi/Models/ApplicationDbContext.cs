@@ -112,7 +112,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "John",
                     LName = "Doe",
                     Dob = new DateTime(1980, 5, 15),
-                    Gender = 'M',
+                    Gender = "M",
                     Address = "123 Main St",
                     Phone = "555-123-4567"
                 },
@@ -123,7 +123,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "Jane",
                     LName = "Smith",
                     Dob = new DateTime(1992, 8, 22),
-                    Gender = 'F',
+                    Gender = "F",
                     Address = "456 Elm St",
                     Phone = "555-987-6543"
                 },
@@ -134,7 +134,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "Michael",
                     LName = "Johnson",
                     Dob = new DateTime(1975, 2, 10),
-                    Gender = 'M',
+                    Gender = "M",
                     Address = "789 Oak St",
                     Phone = "555-567-8901"
                 },
@@ -145,7 +145,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "Emily",
                     LName = "Brown",
                     Dob = new DateTime(1988, 7, 5),
-                    Gender = 'F',
+                    Gender = "F",
                     Address = "101 Pine St",
                     Phone = "555-234-5678"
                 },
@@ -156,7 +156,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "David",
                     LName = "Lee",
                     Dob = new DateTime(1995, 4, 18),
-                    Gender = 'M',
+                    Gender = "M",
                     Address = "222 Cedar St",
                     Phone = "555-876-5432"
                 },
@@ -167,7 +167,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "Sarah",
                     LName = "Wilson",
                     Dob = new DateTime(1983, 9, 30),
-                    Gender = 'F',
+                    Gender = "F",
                     Address = "333 Birch St",
                     Phone = "555-345-6789"
                 },
@@ -178,7 +178,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "Christopher",
                     LName = "Davis",
                     Dob = new DateTime(1970, 12, 12),
-                    Gender = 'M',
+                    Gender = "M",
                     Address = "444 Maple St",
                     Phone = "555-765-4321"
                 },
@@ -189,7 +189,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "Olivia",
                     LName = "Anderson",
                     Dob = new DateTime(1990, 3, 25),
-                    Gender = 'F',
+                    Gender = "F",
                     Address = "555 Spruce St",
                     Phone = "555-432-8765"
                 },
@@ -200,7 +200,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "Daniel",
                     LName = "Martinez",
                     Dob = new DateTime(1986, 6, 8),
-                    Gender = 'M',
+                    Gender = "M",
                     Address = "666 Walnut St",
                     Phone = "555-678-5432"
                 },
@@ -211,7 +211,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "Ava",
                     LName = "Garcia",
                     Dob = new DateTime(1998, 1, 3),
-                    Gender = 'F',
+                    Gender = "F",
                     Address = "777 Pine St",
                     Phone = "555-987-3210"
                 }

@@ -84,10 +84,10 @@ public class PatientsController : ControllerBase
             //Override Id with new Guid
             var newGuid = Guid.NewGuid();
             patient.Id = newGuid.ToString();
-            if (patient.Gender != 'H' || patient.Gender != 'F')
+            if (patient.Gender != "M" || patient.Gender != "F")
             {
                 //Replace any other value with 'U' for unknown
-                patient.Gender = 'U';
+                patient.Gender = "U";
             }
             
             // Set null values to default values.
@@ -140,7 +140,7 @@ public class PatientsController : ControllerBase
             {
                 existingPatient.LName = updatedPatient.LName;
             }
-            if (updatedPatient.Gender != '\0')
+            if (!string.IsNullOrWhiteSpace(updatedPatient.Gender))
             {
                 existingPatient.Gender = updatedPatient.Gender;
             }

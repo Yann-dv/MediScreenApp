@@ -57,11 +57,11 @@
                                                 <label for="Gender">Gender</label>
                                                 <div class="form-control">
                                                     <div class="form-check">
-                                                        <input type="radio" id="GenderH" name="Gender" value="H" class="form-check-input" checked>
+                                                        <input type="radio" id="GenderH" name="Gender" value='M' class="form-check-input" checked>
                                                         <label for="GenderH" class="form-check-label">Male (H)</label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input type="radio" id="GenderF" name="Gender" value="F" class="form-check-input">
+                                                        <input type="radio" id="GenderF" name="Gender" value='F' class="form-check-input">
                                                         <label for="GenderF" class="form-check-label">Female (F)</label>
                                                     </div>
                                                 </div>
@@ -225,7 +225,7 @@
                             <p class="card-id" title="@patient.Id">Id: @patient.Id &nbsp;</p>
                             <div class="card-buttons-group">
                                 <button title="Copy to clipoard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
-                                    <i class="fa-solid fa-copy fs-6"></i>
+                                    <i class="fa-solid fa-copy fs-6 p-0"></i>
                                 </button>
                                 <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
                                     <i class="fa-solid fa-eye"></i>
@@ -260,7 +260,8 @@
                         }
                     </ul>
                 </div>
-            }
+            }//TODO ADD SPACE BETWEEN BUTTONS AND ID
+            //TODO ADD Notes counter
                 @if (!Model.Item2.IsNullOrEmpty() && Model.Item2.Count > 0)
                 {
                     <h3 class="m-3 text-decoration-underline">Notes</h3>

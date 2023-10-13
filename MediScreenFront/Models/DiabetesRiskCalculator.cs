@@ -9,7 +9,7 @@ public class DiabetesRiskCalculator
         "Reaction", "Antibodies"
     };
 
-    public string CalculateDiabetesRisk(Patient patient, List<string> doctorsNotes)
+    public string CalculateDiabetesRiskReport(Patient patient, List<string> doctorsNotes)
     {
         var triggerTermCount = doctorsNotes.Count(note => _triggerTerms.Any(term => note.Contains(term, StringComparison.OrdinalIgnoreCase)));
         
@@ -25,13 +25,13 @@ public class DiabetesRiskCalculator
         {
             switch (patient.Age)
             {
-                case < 30 when patient.Gender == "Male" && triggerTermCount >= 3:
-                case < 30 when patient.Gender == "Female" && triggerTermCount >= 4:
-                case > 30 when triggerTermCount >= 6:
+                case < 30 when patient.Gender == "M" && triggerTermCount >= 3:
+                case < 30 when patient.Gender == "F" && triggerTermCount >= 4:
+                case > 30 when triggerTermCount >= 6 && triggerTermCount < 8:
                     return "In danger";
-                case < 30 when patient.Gender == "Male" && triggerTermCount >= 5:
-                case < 30 when patient.Gender == "Female" && triggerTermCount >= 7:
-                case > 30 when triggerTermCount >= 8:  //Business rule error in the specs
+                case < 30 when patient.Gender == "M" && triggerTermCount >= 5:
+                case < 30 when patient.Gender == "F" && triggerTermCount >= 7:
+                case > 30 when triggerTermCount >= 8:
                     return "Early Onset";
                 default:
                     return "None";

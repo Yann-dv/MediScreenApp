@@ -20,7 +20,7 @@ public class Patient
     public DateTime Dob { get; set; }
 
     [DataMember]
-    public char Gender { get; set; }
+    public string Gender { get; set; }
 
     [DataMember]
     public string? Address { get; set; }

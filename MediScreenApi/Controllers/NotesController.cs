@@ -26,7 +26,6 @@ namespace MediScreenApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("GetAllNotes")]
-
         public ActionResult<IEnumerable<Note>> GetAllNotes()
         {
             try
@@ -40,6 +39,21 @@ namespace MediScreenApi.Controllers
             }
         }
         
+        [HttpGet]
+        [Route("CountPatientNotes/{patientId}")]
+        public int CountPatientNotes(string patientId)
+        {
+            try
+            {
+                var notes = _notesCollection.Find(n => n.PatientId == patientId).ToList();
+                return notes.Count;
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
+            
         /// <summary>
         /// Get all notes for a patient
         /// </summary>
@@ -181,7 +195,7 @@ namespace MediScreenApi.Controllers
         /// <param name="patientId"></param>
         /// <returns></returns>
         [HttpDelete]
-        [Route("DeleteAllPatientNotes/{patientId}")]
+        [Route("DeleteAllPatientNotes/{patientId }")]
         public IActionResult DeleteAllPatientNotes(string patientId)
         {
             try
