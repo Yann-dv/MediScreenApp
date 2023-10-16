@@ -353,6 +353,31 @@ public class ServicesController : Controller
 
         return View("Index", Tuple.Create(new List<Patient>(), notes));
     }
+    
+    public int CountPatientNotes(string patientId)
+    {
+        try
+        {
+            using (var response = new HttpClient().GetAsync(_apiNotesUri + "/CountPatientNotes/" + patientId))
+            {
+                if (response.Result.StatusCode == HttpStatusCode.OK)
+                {
+                    var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
+                    var deserializedObject = JsonConvert.DeserializeObject<int>(apiResponseObject);
+
+                    return deserializedObject;
+                }
+                else
+                    ViewBag.StatusCode = response.Result.StatusCode;
+            }
+        }
+        catch (Exception e)
+        {
+            ViewBag.StatusCode = e.Message;
+        }
+
+        return 0;
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]

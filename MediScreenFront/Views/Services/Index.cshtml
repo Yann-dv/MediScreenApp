@@ -7,7 +7,7 @@
 
 <section class="container pt-4">
     <h2>@ViewData["Title"]</h2>
-    <div class="services-container d-flex">
+    <div class="services-container">
         <div class="services-form">
             <!-- Dropend buttons -->
             <!-- Patients -->
@@ -143,7 +143,7 @@
             </div>
         </div>
 
-        <div id="services-ouptut" class="ms-4 d-grid container">
+        <div id="services-ouptut" class="ms-4">
             <!-------------------------------------->
             <!-- Toasts group -->
             <!-- Toast for copy to clipboard -->
@@ -213,29 +213,33 @@
                 </div>
             }
 
-            <div class="row patients">
+            <div class="patients-container">
                 @if (!Model.Item1.IsNullOrEmpty() && Model.Item1.Count > 0)
                 {
-                    <h3 class="m-3 text-decoration-underline">Patients</h3>
+                <h3 class="m-3 text-decoration-underline">Patients</h3>
                     foreach (var patient in @Model.Item1)
                     {
-                        <div class="patient-card card-body primary-border rounded m-3 p-3" 
-                             style="max-width: @(Model.Item2.IsNullOrEmpty() ? "42%" : "100%")">
+                        <div class="@(Model.Item1.Count > 1 ? "" : "col") patient-card card-body primary-border rounded p-3">
+                            <div class="card-buttons-group">
                             <i class="fa-regular fa-user">&nbsp;</i>
                             <p class="card-id" title="@patient.Id">Id: @patient.Id &nbsp;</p>
-                            <div class="card-buttons-group">
-                                <button title="Copy to clipoard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
+                                <button title="Copy to clipboard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
                                     <i class="fa-solid fa-copy fs-6 p-0"></i>
                                 </button>
                                 <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
                                     <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-info position-relative" id="notesCount_@patient.Id">
+                                    <i class="fa-solid fa-clipboard position-relative"></i>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        <span class="visually-hidden">Notes count</span>
+                                    </span>
                                 </button>
                                 <button type="button" title="Add a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNoteModal-@patient.Id"><i class="fa-solid fa-plus"></i></button>
                             </div>
                             <div class="modal fade" id="createNoteModal-@patient.Id" tabindex="-1" aria-labelledby="createNoteModalTitle" aria-hidden="true">
                                 @await Html.PartialAsync("_CreateNoteForm", new Note { PatientId = patient.Id })
                             </div>
-
                             <ul>
                                 <li>Gender: @patient.Gender</li>
                                 <li>Age: @patient.Age</li>
@@ -249,7 +253,7 @@
                     }
                 }
             </div>
-            <div class="row notes">
+            <div class="notes-container">
             @if (ViewBag.ValidationErrors != null && ViewBag.ValidationErrors.Count > 0)
             {
                 <div class="alert alert-danger">
@@ -260,17 +264,16 @@
                         }
                     </ul>
                 </div>
-            }//TODO ADD SPACE BETWEEN BUTTONS AND ID
-            //TODO ADD Notes counter
+            }
                 @if (!Model.Item2.IsNullOrEmpty() && Model.Item2.Count > 0)
                 {
                     <h3 class="m-3 text-decoration-underline">Notes</h3>
                     foreach (var note in @Model.Item2)
                     {
-                        <div class="note-card card-body primary-border rounded m-3 p-3">
-                            <i class="fa-solid fa-list">&nbsp;</i>
-                            <p class="card-id" title="@note.Id">Id: @note.Id &nbsp;</p>
+                        <div class="@(Model.Item2.Count > 1 ? "" : "col") note-card card-body primary-border rounded p-3">
                             <div class="card-buttons-group">
+                               <i class="fa-solid fa-list">&nbsp;</i>
+                               <p class="card-id" title="@note.Id">Id: @note.Id &nbsp;</p>
                                 <button title="Copy note id" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
                                     <i class="fa-solid fa-copy fs-6"></i>
                                 </button>
@@ -307,8 +310,37 @@
    function redirectToGetPatientNotes(patientId) {
        window.location.href = '/Services/GetPatientNotes?getNotesByPatientId=' + patientId;
    }
+   
+   function updateNotesCount(patientId) {
+       fetch(`/Services/CountPatientNotes?patientId=${patientId}`)
+           .then(response => response.json())
+           .then(count => {
+               const notesCountElement = document.getElementById(`notesCount_${patientId}`);
+               const badgeElement = notesCountElement.querySelector('.badge');
+               if (count === 0) {
+                   notesCountElement.style.display = 'none';
+               }
+               badgeElement.textContent = count;
+           })
+           .catch(error => {
+               console.error("Error getting notes count:", error);
+               const notesCountElement = document.getElementById(`notesCount_${patientId}`);
+               notesCountElement.textContent = "Error getting notes count";
+           });
+   }
+   
+   function updateNotesCountsForAllPatients() {
+       const patients = @Json.Serialize(Model.Item1);
+       patients.forEach(patient => {
+           updateNotesCount(patient.id);
+       });
+   }
+   
+   document.addEventListener('DOMContentLoaded', function () {
+       updateNotesCountsForAllPatients();
+   });
 
-    
+
      function confirmDelete(id, patientId) {
             if (confirm("Are you sure you want to delete this note?")) {
                 // Make an AJAX request to delete the note
@@ -347,7 +379,6 @@
               dropdownMenu.classList.toggle('hide');  
   }
   
-  
       document.addEventListener('readystatechange', function () {
           var confirmationMessage = $(".confirmation-message");
                     
@@ -359,6 +390,7 @@
                         }, 5000);
                     }
   });
+                 
    
    setTimeout(function () {
        var successMessage = document.getElementById('successMessage');
