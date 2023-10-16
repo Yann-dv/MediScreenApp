@@ -80,14 +80,6 @@ public class MongoDbDatas
             },
             new Note
             {
-                PatientId = "3d387417-2f61-46a5-9555-b2d00b0aa24c",
-                DoctorId = "67890",
-                VisitDate = DateTime.Parse("2023-09-27"),
-                NoteText =
-                    "The patient, DQ,d?DQ D, age 18, was examined today. No specific health issues were reported. The patient is advised to maintain a healthy lifestyle and seek medical attention if any health concerns arise."
-            },
-            new Note
-            {
                 PatientId = "44f4a148-86e5-40e9-b356-967ace62f3c0",
                 DoctorId = "67890",
                 VisitDate = DateTime.Parse("2023-09-27"),
@@ -173,14 +165,6 @@ public class MongoDbDatas
                 VisitDate = DateTime.Parse("2023-10-17"),
                 NoteText =
                     "Follow-up visit for Sarah Wilson. The patient reports reduced stress at work. Hearing issues remain stable. No significant health concerns. Advised to continue stress management."
-            },
-            new Note
-            {
-                PatientId = "3d387417-2f61-46a5-9555-b2d00b0aa24c",
-                DoctorId = "67890",
-                VisitDate = DateTime.Parse("2023-10-18"),
-                NoteText =
-                    "Follow-up visit for DQ,d?DQ D. The patient continues to maintain a healthy lifestyle. No specific health issues reported."
             },
             new Note
             {
