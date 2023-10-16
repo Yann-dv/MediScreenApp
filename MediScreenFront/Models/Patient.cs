@@ -27,4 +27,6 @@ public class Patient
 
     [DataMember]
     public string? Phone { get; set; }
+
+    public object? DiabetesRisk { get; set; }
 }

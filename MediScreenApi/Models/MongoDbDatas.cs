@@ -68,7 +68,7 @@ public class MongoDbDatas
                 DoctorId = "67890",
                 VisitDate = DateTime.Parse("2023-09-27"),
                 NoteText =
-                    "The patient, Daniel Martinez, was examined today for symptoms of feeling tired during the day, complaining about muscle aches, and having elevated Microalbumin in lab reports. The patient is advised to rest, manage stress, and follow up on lab results. A plan for managing muscle aches will be discussed in the next visit."
+                    "The patient, Daniel Martinez, was examined today for symptoms of feeling tired during the day, complaining about muscle aches, and having elevated Microalbumin and Hemoglobin A1C in lab reports. The patient is advised to rest, manage stress, and follow up on lab results. A plan for managing muscle aches will be discussed in the next visit."
             },
             new Note
             {
@@ -116,7 +116,7 @@ public class MongoDbDatas
                 DoctorId = "67890",
                 VisitDate = DateTime.Parse("2023-09-27"),
                 NoteText =
-                    "The patient, John Doe, was examined today for symptoms of waking with stiffness in joints, difficulty sleeping, elevated body weight, and high cholesterol LDL levels. The patient is advised to follow dietary and lifestyle changes to address these concerns. Medications may be prescribed."
+                    "The patient, John Doe, was examined today for symptoms of waking with stiffness in joints, difficulty sleeping, elevated body weight, and high cholesterol LDL levels. The patient is advised to follow dietary and lifestyle changes to address these concerns. Medications may be prescribed. The patient is a smoker, have some microalbumin relapse, abnormal reaction and cholesterol. His body weiht and body height are to watch."
             },
             new Note
             {
@@ -124,8 +124,8 @@ public class MongoDbDatas
                 DoctorId = "67890",
                 VisitDate = DateTime.Parse("2023-09-27"),
                 NoteText =
-                    "The patient, USERTEST TODELETE, age 28, was examined today. No specific health issues were reported. The patient is advised to maintain a healthy lifestyle and seek medical attention if any health concerns arise."
-            },
+                    "The patient, USERTEST TODELETE, age 28, was examined today. No specific health issues were reported. The patient is advised to maintain a healthy lifestyle and seek medical attention if any health concerns arise. Patient is a smoker and have some cholesterol and dizziness."
+            }, 
             new Note
             {
                 PatientId = "d086c531-da72-492d-bf2f-d0a954b77335",

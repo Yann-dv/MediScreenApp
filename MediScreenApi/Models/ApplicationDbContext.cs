@@ -223,7 +223,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     FName = "USERTEST",
                     LName = "TODELETE",
                     Dob = new DateTime(1995, 1, 10),
-                    Gender = "U",
+                    Gender = "M",
                     Address = "No address provided.",
                     Phone = "No phone number provided."
                 }

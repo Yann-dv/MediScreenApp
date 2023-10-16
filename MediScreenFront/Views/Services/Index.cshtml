@@ -229,7 +229,7 @@
                                 <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
                                     <i class="fa-solid fa-eye"></i>
                                 </button>
-                                <button type="button" class="btn btn-info position-relative" id="notesCount_@patient.Id">
+                                <button title="Doctor's notes" class="btn btn-info position-relative" id="notesCount_@patient.Id">
                                     <i class="fa-solid fa-clipboard position-relative"></i>
                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                         <span class="visually-hidden">Notes count</span>
@@ -249,6 +249,49 @@
                                 <li>Address: @patient.Address</li>
                                 <li>Phone: @patient.Phone</li>
                             </ul>
+                            @switch (patient.DiabetesRisk?.ToString())
+                            {
+                                case "In danger":
+                                case "Early Onset":
+                                    <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-danger" data-toggle="modal" data-target="#diabetesRiskModal">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                    </button>
+                                    break;
+                                case "Borderline":
+                                    <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-warning" data-toggle="modal" data-target="#diabetesRiskModal">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                    </button>
+                                    break;
+                            }
+                            <script>
+                                $('#diabetesRiskModal').on('show.bs.modal', function (event) {
+                                    var button = $(event.relatedTarget);
+                                    var diabetesRisk = button.attr('title');
+                                    $('#diabetesRiskText').text(diabetesRisk);
+                                });
+                            </script>
+
+
+<div class="modal fade" id="diabetesRiskModal" tabindex="-1" role="dialog" aria-labelledby="diabetesRiskModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="diabetesRiskModalLabel">Diabetes Risk</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>The diabetes risk for this patient is: <span class="text-decoration-underline fw-bold" id="diabetesRiskText"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
                         </div>
                     }
                 }

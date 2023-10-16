@@ -121,6 +121,16 @@ section.container {
     margin: 1px;
 }
 
+.patient-card {
+    position: relative;
+}
+
+.diabetes-risk {
+    position: absolute;
+    bottom: .5rem;
+    right: .5rem;
+}
+
 @media (min-width: 992px) {
     .card-body {
         width: 30%;
