@@ -7,7 +7,7 @@ public class Note
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    [BsonElement("_id")]
+    [BsonElement("id")]
     public string Id { get; set; }
 
     [BsonElement("patient_id")]

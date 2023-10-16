@@ -70,7 +70,7 @@ using (var scope = app.Services.CreateScope())
     dbContext.SeedData();
 }
 
-MongoDbDatas.NotesSeeding();
+//MongoDbDatas.NotesSeeding();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

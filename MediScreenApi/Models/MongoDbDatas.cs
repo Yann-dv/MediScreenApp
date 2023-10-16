@@ -50,7 +50,7 @@ public class MongoDbDatas
     public static void NotesSeeding()
     {
         string? mongoDbConnectionString = Environment.GetEnvironmentVariable("MEDISCREEN_MONGODB_CONNECTIONSTRING");
-        var seeder = new MongoDbDatas.NoteSeeder(mongoDbConnectionString, "MediScreenMongoDb");
+        var seeder = new NoteSeeder(mongoDbConnectionString, "MediScreenMongoDb");
 
         var transformedNotesData = new List<Note>
         {
@@ -190,7 +190,7 @@ public class MongoDbDatas
                 NoteText =
                     "Follow-up visit for Michael Johnson. The patient is advised again to consider smoking cessation for better health."
             },
-            new()
+            new Note
             {
                 PatientId = "46cf14c9-2dbf-4645-a6b0-e6d86d544f7a",
                 DoctorId = "67890",
