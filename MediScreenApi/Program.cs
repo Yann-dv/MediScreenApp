@@ -50,8 +50,9 @@ builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 builder.Services.AddScoped<IMongoDatabase>(serviceProvider =>
 {
     var client = serviceProvider.GetRequiredService<IMongoClient>();
-    return client.GetDatabase("MediScreenMongoDb"); // Replace with your MongoDB database name
+    return client.GetDatabase("MediScreenMongoDb");
 });
+
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -68,6 +69,8 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.EnsureCreated();
     dbContext.SeedData();
 }
+
+MongoDbDatas.NotesSeeding();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
