@@ -136,6 +136,14 @@ section.container {
         width: 30%;
     }
 
+    .diabetes-risk:hover {
+        cursor: pointer;
+    }
+    
+    .diabetes-risk:hover:before{
+        content: "Diabetes Risk";
+    }
+
     .patients-container, .notes-container {
         display: flex;
         flex-wrap: wrap;
