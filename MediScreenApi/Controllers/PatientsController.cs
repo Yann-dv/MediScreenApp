@@ -128,33 +128,37 @@ public class PatientsController : ControllerBase
             }
 
             // Update only the fields that have been changed
-            if(!string.IsNullOrWhiteSpace(updatedPatient.Age.ToString()))
+            if(!string.IsNullOrWhiteSpace(updatedPatient.Age.ToString()) && existingPatient.Age != updatedPatient.Age)
             {
                 existingPatient.Age = updatedPatient.Age;
             }
-            if (!string.IsNullOrWhiteSpace(updatedPatient.FName))
+            if (!string.IsNullOrWhiteSpace(updatedPatient.FName) && existingPatient.FName != updatedPatient.FName)
             {
                 existingPatient.FName = updatedPatient.FName;
             }
-            if (!string.IsNullOrWhiteSpace(updatedPatient.LName))
+            if (!string.IsNullOrWhiteSpace(updatedPatient.LName) && existingPatient.LName != updatedPatient.LName)
             {
                 existingPatient.LName = updatedPatient.LName;
             }
-            if (!string.IsNullOrWhiteSpace(updatedPatient.Gender))
+            if (!string.IsNullOrWhiteSpace(updatedPatient.Gender) && existingPatient.Gender != updatedPatient.Gender)
             {
                 existingPatient.Gender = updatedPatient.Gender;
             }
-            if (updatedPatient.Dob != DateTime.MinValue)
+            if (updatedPatient.Dob != DateTime.MinValue && existingPatient.Dob != updatedPatient.Dob)
             {
                 existingPatient.Dob = updatedPatient.Dob;
             }
-            if (!string.IsNullOrWhiteSpace(updatedPatient.Address))
+            if (!string.IsNullOrWhiteSpace(updatedPatient.Address) && existingPatient.Address != updatedPatient.Address)
             {
                 existingPatient.Address = updatedPatient.Address;
             }
-            if (!string.IsNullOrWhiteSpace(updatedPatient.Phone))
+            if (!string.IsNullOrWhiteSpace(updatedPatient.Phone) && existingPatient.Phone != updatedPatient.Phone)
             {
                 existingPatient.Phone = updatedPatient.Phone;
+            }
+            if(!string.IsNullOrWhiteSpace(updatedPatient.DiabetesRisk) && existingPatient.DiabetesRisk != updatedPatient.DiabetesRisk)
+            {
+                existingPatient.DiabetesRisk = updatedPatient.DiabetesRisk;
             }
 
             await _context.SaveChangesAsync();

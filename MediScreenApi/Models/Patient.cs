@@ -27,4 +27,8 @@ public class Patient
 
     [DataMember]
     public string? Phone { get; set; }
+    
+    [DataMember]
+    public string? DiabetesRisk { get; set; }
+
 }
