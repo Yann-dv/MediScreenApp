@@ -25,7 +25,7 @@ public class PatientsController : ControllerBase
     {
         var patients = new List<Patient>();
 
-        if (_context.Patients == null || !_context.Patients.Any())
+        if (!_context.Patients.Any())
         {
             return NotFound();
         }
