@@ -126,6 +126,11 @@ public class PatientsController : ControllerBase
             {
                 return NotFound("Patient not found.");
             }
+            
+            if(updatedPatient == existingPatient)
+            {
+                return Ok("No changes detected, patient updated with no changes.");
+            }
 
             // Update only the fields that have been changed
             if(!string.IsNullOrWhiteSpace(updatedPatient.Age.ToString()) && existingPatient.Age != updatedPatient.Age)
