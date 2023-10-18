@@ -58,18 +58,18 @@ public class DiabetesRiskCalculator
         {
             if (patient.Gender == "M" && triggerCount >= 3)
             {
-                return "In danger";
+                return "In Danger";
             }
             if (patient.Gender == "F" && triggerCount >= 4)
             {
-                return "In danger";
+                return "In Danger";
             }
         }
         else
         {
             if (triggerCount is >= 6 and < 8)
             {
-                return "In danger";
+                return "In Danger";
             }
             if (triggerCount >= 8)
             {

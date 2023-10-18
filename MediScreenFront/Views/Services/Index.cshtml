@@ -6,345 +6,220 @@
 }
 
 <section class="container pt-4">
-    <h2>@ViewData["Title"]</h2>
-    <div class="services-container">
-        <div class="services-form">
-            <!-- Dropend buttons -->
-            <!-- Patients -->
-            <div class="btn-group dropdown my-1">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                    Patients
-                </button>
-                <ul class="dropdown-menu my-2 bg-secondary">
-                    <li>
-                        <div class="dropdown-item">
-                            <h5>List all patients</h5>
-                            @using (Html.BeginForm("ListPatients", "Services", FormMethod.Post, new { @class = "mx-4" }))
-                            {
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-primary my-2">List all patients</button>
-                            }
-                        </div>
-                    </li>
-                    <li>
-                        <div class="dropdown-item">
-                            <h5>Find a patient</h5>
-                            @using (Html.BeginForm("GetOnePatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
-                            {
-                                @Html.AntiForgeryToken()
-                                <div class="form-group">
-                                    <input type="text" class="form-control" id="query" name="query" placeholder="Enter a query">
-                                </div>
-                                <button type="submit" class="btn btn-primary my-2">Search</button>
-                            }
-                        </div>
-                    </li>
-                    <li>
-                        <div class="dropdown-item dropend">
-                            <h5>Create a patient</h5>
-                            <button class="btn btn-primary my-2 dropdown-toggle mx-4" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                Create form
-                            </button>
-                            <ul class="dropdown-menu bg-secondary submenu">
-                                <li>
-                                    <div class="dropdown-item submenu-item">
-                                        <h5>New patient</h5>
-                                        @using (Html.BeginForm("CreatePatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
-                                        {
-                                            @Html.ValidationSummary()
-                                            @Html.AntiForgeryToken()
-                                            <div class="form-group">
-                                                <label for="Gender">Gender</label>
-                                                <div class="form-control">
-                                                    <div class="form-check">
-                                                        <input type="radio" id="GenderH" name="Gender" value='M' class="form-check-input" checked>
-                                                        <label for="GenderH" class="form-check-label">Male (H)</label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input type="radio" id="GenderF" name="Gender" value='F' class="form-check-input">
-                                                        <label for="GenderF" class="form-check-label">Female (F)</label>
-                                                    </div>
-                                                </div>
-                                                <label for="Dob">Date of birth</label>
-                                                <input type="date" class="form-control" id="Dob" name="Dob" placeholder="Date of Birth">
-                                                <input type="text" class="form-control" id="FName" name="FName" placeholder="First Name">
-                                                <input type="text" class="form-control" id="LName" name="LName" placeholder="Last Name">
-                                                <input type="text" class="form-control" id="Address" name="Address" placeholder="Address">
-                                                <input type="text" class="form-control" id="Phone" name="Phone" placeholder="Phone">
-                                            </div>
-                                            <button type="submit" class="btn btn-primary my-2">Create</button>
-                                        }
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="dropdown-item">
-                            <h5>Edit a patient</h5>
-                            @using (Html.BeginForm("SearchPatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
-                            {
-                                @Html.ValidationSummary()
-                                @Html.AntiForgeryToken()
-                                <div class="form-group">
-                                    <input type="text" class="form-control" id="SearchPatientId" name="searchId" placeholder="Patient Id">
-                                </div>
-                                <button type="submit" class="btn btn-primary my-2">Search</button>
-                            }
-                        </div>
-                    </li>
-                    <li>
-                        <div class="dropdown-item">
-                            <h5>Delete a patient</h5>
-                            @using (Html.BeginForm("DeletePatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
-                            {
-                                @Html.ValidationSummary()
-                                @Html.AntiForgeryToken()
-                                <div class="form-group">
-                                    <input type="text" class="form-control" id="DeletePatientId" name="id" placeholder="Patient Id">
-                                    <input type="hidden" name="_method" value="DELETE">
-                                </div>
-                                <button type="submit" class="btn btn-danger my-2">Delete</button>
-                            }
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <!-- Notes -->
-            <div class="btn-group dropdown my-1">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                    Notes
-                </button>
-                <ul class="dropdown-menu my-2 bg-secondary">
-                    <li>
-                        <div class="dropdown-item">
-                            <h5>List all notes</h5>
-                            @using (Html.BeginForm("GetAllNotes", "Services", FormMethod.Post, new { @class = "mx-4" }))
-                            {
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-primary my-2">Get all notes</button>
-                            }
-                        </div>
-                    </li>
-                    <li>
-                        <div class="dropdown-item">
-                            <h5>See patient notes</h5>
-                            @using (Html.BeginForm("GetPatientNotes", "Services", FormMethod.Post, new { @class = "mx-4" }))
-                            {
-                                @Html.AntiForgeryToken()
-                                <div class="form-group">
-                                    <input type="text" class="form-control" id="getNotesByPatientId" name="getNotesByPatientId" placeholder="Patient Id">
-                                </div>
-                                <button type="submit" class="btn btn-primary my-2">Search notes</button>
-                            }
-                        </div>
-                    </li>
-                </ul>
-            </div>
+<h2>@ViewData["Title"]</h2>
+<div class="services-container">
+
+    @await Html.PartialAsync("_Navbar")
+
+    <div id="services-ouptut" class="ms-4">
+    <!-------------------------------------->
+    <!-- Toasts group -->
+    <!-- Toast for copy to clipboard -->
+    <div class="toast" id="copiedToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="mr-auto">Copied</strong>
+            <small class="text-muted">At @DateTime.Now.ToString("HH:mm:ss")</small>
+            <button type="button" class="ml-2 mb-1 close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
-
-        <div id="services-ouptut" class="ms-4">
-            <!-------------------------------------->
-            <!-- Toasts group -->
-            <!-- Toast for copy to clipboard -->
-            <div class="toast" id="copiedToast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <strong class="mr-auto">Copied</strong>
-                    <small class="text-muted">At @DateTime.Now.ToString("HH:mm:ss")</small>
-                    <button type="button" class="ml-2 mb-1 close" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="toast-body">
-                    The Patient Id has been copied to the clipboard.
-                </div>
-            </div>
-            <!--End of Toasts groupd -->
-            <!-------------------------------------->
-            @if (ViewBag.PatientCreated == true)
-            {
-                <div class="alert alert-success confirmation-message">
-                    @ViewBag.PatientCreatedConfirmation
-                </div>
-            }
-            else if (ViewBag.PatientCreated == false)
-            {
-                <div class="alert alert-danger confirmation-message">
-                    @ViewBag.PatientCreatedConfirmation
-                </div>
-            }
-
-            @if (ViewBag.PatientUpdated == true)
-            {
-                <div class="alert alert-success confirmation-message">
-                    @ViewBag.PatientUpdatedConfirmation
-                </div>
-            }
-            else if (ViewBag.PatientUpdated == false)
-            {
-                <div class="alert alert-danger confirmation-message">
-                    @ViewBag.PatientUpdatedConfirmation
-                </div>
-            }
-
-            @if (ViewBag.PatientDeleted == true)
-            {
-                <div class="alert alert-success confirmation-message">
-                    @ViewBag.PatientDeletedConfirmation
-                </div>
-            }
-            else if (ViewBag.PatientDeleted == false)
-            {
-                <div class="alert alert-danger confirmation-message">
-                    @ViewBag.PatientDeletedConfirmation
-                </div>
-            }
-           
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div id="successMessage" class="alert alert-success">
-                    @TempData["SuccessMessage"]
-                </div>
-            }
-            else if (TempData["ErrorMessage"] != null)
-            {
-                <div id="errorMessage" class="alert alert-danger">
-                    @TempData["ErrorMessage"]
-                </div>
-            }
-
-            <div class="patients-container">
-                @if (!Model.Item1.IsNullOrEmpty() && Model.Item1.Count > 0)
-                {
-                <h3 class="m-3 text-decoration-underline">Patients</h3>
-                    foreach (var patient in @Model.Item1)
-                    {
-                        <div class="@(Model.Item1.Count > 1 ? "" : "col") patient-card card-body primary-border rounded p-3">
-                            <div class="card-buttons-group">
-                            <i class="fa-regular fa-user">&nbsp;</i>
-                            <p class="card-id" title="@patient.Id">Id: @patient.Id &nbsp;</p>
-                                <button title="Copy to clipboard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
-                                    <i class="fa-solid fa-copy fs-6 p-0"></i>
-                                </button>
-                                <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                                <button title="Doctor's notes" class="btn btn-info position-relative" id="notesCount_@patient.Id">
-                                    <i class="fa-solid fa-clipboard position-relative"></i>
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        <span class="visually-hidden">Notes count</span>
-                                    </span>
-                                </button>
-                                <button type="button" title="Add a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNoteModal-@patient.Id"><i class="fa-solid fa-plus"></i></button>
-                            </div>
-                            <div class="modal fade" id="createNoteModal-@patient.Id" tabindex="-1" aria-labelledby="createNoteModalTitle" aria-hidden="true">
-                                @await Html.PartialAsync("_CreateNoteForm", new Note { PatientId = patient.Id })
-                            </div>
-                            <ul>
-                                <li>Gender: @patient.Gender</li>
-                                <li>Age: @patient.Age</li>
-                                <li>First Name: @patient.FName</li>
-                                <li>Last Name: @patient.LName</li>
-                                <li>Date of Birth: @patient.Dob</li>
-                                <li>Address: @patient.Address</li>
-                                <li>Phone: @patient.Phone</li>
-                            </ul>
-                            @switch (patient.DiabetesRisk?.ToString())
-                            {
-                                case "In danger":
-                                case "Early Onset":
-                                    <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-danger" data-toggle="modal" data-target="#diabetesRiskModal">
-                                        <i class="fa-solid fa-triangle-exclamation"></i>
-                                    </button>
-                                    break;
-                                case "Borderline":
-                                    <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-warning" data-toggle="modal" data-target="#diabetesRiskModal">
-                                        <i class="fa-solid fa-triangle-exclamation"></i>
-                                    </button>
-                                    break;
-                            }
-                            <script>
-                                $('#diabetesRiskModal').on('show.bs.modal', function (event) {
-                                    var button = $(event.relatedTarget);
-                                    var diabetesRisk = button.attr('title');
-                                    $('#diabetesRiskText').text(diabetesRisk);
-                                });
-                            </script>
-
-
-<div class="modal fade" id="diabetesRiskModal" tabindex="-1" role="dialog" aria-labelledby="diabetesRiskModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="diabetesRiskModalLabel">Diabetes Risk</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>The diabetes risk for this patient is: <span class="text-decoration-underline fw-bold" id="diabetesRiskText"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
+        <div class="toast-body">
+            The Patient Id has been copied to the clipboard.
         </div>
     </div>
-</div>
+    <!--End of Toasts groupd -->
+    <!-------------------------------------->
+    @if (ViewBag.PatientCreated == true)
+    {
+        <div class="alert alert-success confirmation-message">
+            @ViewBag.PatientCreatedConfirmation
+        </div>
+    }
+    else if (ViewBag.PatientCreated == false)
+    {
+        <div class="alert alert-danger confirmation-message">
+            @ViewBag.PatientCreatedConfirmation
+        </div>
+    }
 
+    @if (ViewBag.PatientUpdated == true)
+    {
+        <div class="alert alert-success confirmation-message">
+            @ViewBag.PatientUpdatedConfirmation
+        </div>
+    }
+    else if (ViewBag.PatientUpdated == false)
+    {
+        <div class="alert alert-danger confirmation-message">
+            @ViewBag.PatientUpdatedConfirmation
+        </div>
+    }
 
-                        </div>
-                    }
-                }
-            </div>
-            <div class="notes-container">
-            @if (ViewBag.ValidationErrors != null && ViewBag.ValidationErrors.Count > 0)
+    @if (ViewBag.PatientDeleted == true)
+    {
+        <div class="alert alert-success confirmation-message">
+            @ViewBag.PatientDeletedConfirmation
+        </div>
+    }
+    else if (ViewBag.PatientDeleted == false)
+    {
+        <div class="alert alert-danger confirmation-message">
+            @ViewBag.PatientDeletedConfirmation
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="successMessage" class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    else if (TempData["ErrorMessage"] != null)
+    {
+        <div id="errorMessage" class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="patients-container">
+        @if (!Model.Item1.IsNullOrEmpty() && Model.Item1.Count > 0)
+        {
+            <h3 class="m-3 text-decoration-underline">Patients</h3>
+            foreach (var patient in @Model.Item1)
             {
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach (var error in ViewBag.ValidationErrors)
+                <div class="@(Model.Item1.Count > 1 ? "" : "col") patient-card card-body primary-border rounded p-3">
+                    <div class="card-buttons-group">
+                        <i class="fa-regular fa-user">&nbsp;</i>
+                        <p class="card-id" title="@patient.Id">Id: @patient.Id &nbsp;</p>
+                        <button title="Copy to clipboard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
+                            <i class="fa-solid fa-copy fs-6 p-0"></i>
+                        </button>
+                        <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button title="Doctor's notes" class="btn btn-info position-relative" id="notesCount_@patient.Id">
+                            <i class="fa-solid fa-clipboard position-relative"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                <span class="visually-hidden">Notes count</span>
+                            </span>
+                        </button>
+                        <button type="button" title="Add a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNoteModal-@patient.Id">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="modal fade" id="createNoteModal-@patient.Id" tabindex="-1" aria-labelledby="createNoteModalTitle" aria-hidden="true">
+                        @if (patient.Id != null)
                         {
-                            <li>@error</li>
+                            @await Html.PartialAsync("_CreateNoteForm", new Note { PatientId = patient.Id })
                         }
+                    </div>
+                    <ul>
+                        <li>Gender: @patient.Gender</li>
+                        <li>Age: @patient.Age</li>
+                        <li>First Name: @patient.FName</li>
+                        <li>Last Name: @patient.LName</li>
+                        <li>Date of Birth: @patient.Dob</li>
+                        <li>Address: @patient.Address</li>
+                        <li>Phone: @patient.Phone</li>
+                    </ul>
+                    @switch (patient.DiabetesRisk)
+                    {
+                        case "In Danger":
+                            <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-warning" data-toggle="modal" data-target="#diabetesRiskModal">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </button>
+                            break;
+                        case "Early Onset":
+                            <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-danger" data-toggle="modal" data-target="#diabetesRiskModal">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </button>
+                            break;
+                        case "Borderline":
+                            <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-info" data-toggle="modal" data-target="#diabetesRiskModal">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </button>
+                            break;
+                    }
+
+                    <!-- Modal for diabetes risk-->
+                    <div class="modal fade" id="diabetesRiskModal" tabindex="-1" role="dialog" aria-labelledby="diabetesRiskModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="diabetesRiskModalLabel">Diabetes Risk</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>The diabetes risk for this patient is: <span class="text-decoration-underline fw-bold" id="diabetesRiskText"></span></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <script>$('#diabetesRiskModal').on('show.bs.modal', function (event) {
+                let button = $(event.relatedTarget);
+                let diabetesRisk = button.attr('title');
+                $('#diabetesRiskText').text(diabetesRisk);
+            });
+    </script>
+    
+    <div class="notes-container">
+        @if (ViewBag.ValidationErrors != null && ViewBag.ValidationErrors.Count > 0)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var error in ViewBag.ValidationErrors)
+                    {
+                        <li>@error</li>
+                    }
+                </ul>
+            </div>
+        }
+        @if (!Model.Item2.IsNullOrEmpty() && Model.Item2!.Count > 0)
+        {
+            <h3 class="m-3 text-decoration-underline">Notes</h3>
+            foreach (var note in @Model.Item2)
+            {
+                <div class="@(Model.Item2.Count > 1 ? "" : "col") note-card card-body primary-border rounded p-3">
+                    <div class="card-buttons-group">
+                        <i class="fa-solid fa-list">&nbsp;</i>
+                        <p class="card-id" title="@note.Id">Id: @note.Id &nbsp;</p>
+                        <button title="Copy note id" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
+                            <i class="fa-solid fa-copy fs-6"></i>
+                        </button>
+                        <button title="See patient" class="btn btn-primary" onclick="redirectToGetPatientNotes('@note.PatientId')">
+                            <i class="fa-regular fa-user fs-6"></i>
+                        </button>
+                        <button title="Edit a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#updateNoteModal-@note.Id">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button title="Delete note" class="btn btn-danger" onclick="confirmDelete('@note.Id', '@note.PatientId')" data-note-id="@note.Id">
+                            <i class="fa-solid fa-x"></i>
+                        </button>
+                        <div class="modal fade" id="updateNoteModal-@note.Id" tabindex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
+                            @await Html.PartialAsync("_EditNoteForm", note)
+                        </div>
+                    </div>
+                    <ul>
+                        <li>Doctor Id: @note.DoctorId</li>
+                        <li>Patient Id: @note.PatientId</li>
+                        <li>Visited on: @note.VisitDate</li>
+                        <li>Note: @note.NoteText</li>
                     </ul>
                 </div>
             }
-                @if (!Model.Item2.IsNullOrEmpty() && Model.Item2.Count > 0)
-                {
-                    <h3 class="m-3 text-decoration-underline">Notes</h3>
-                    foreach (var note in @Model.Item2)
-                    {
-                        <div class="@(Model.Item2.Count > 1 ? "" : "col") note-card card-body primary-border rounded p-3">
-                            <div class="card-buttons-group">
-                               <i class="fa-solid fa-list">&nbsp;</i>
-                               <p class="card-id" title="@note.Id">Id: @note.Id &nbsp;</p>
-                                <button title="Copy note id" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
-                                    <i class="fa-solid fa-copy fs-6"></i>
-                                </button>
-                                <button title="See patient" class="btn btn-primary" onclick="redirectToGetPatientNotes('@note.PatientId')">
-                                    <i class="fa-regular fa-user fs-6"></i>
-                                </button>
-                                <button title="Edit a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#updateNoteModal-@note.Id">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                <button title="Delete note" class="btn btn-danger" onclick="confirmDelete('@note.Id', '@note.PatientId')" data-note-id="@note.Id">
-                                    <i class="fa-solid fa-x"></i>
-                                </button>
-                                <div class="modal fade" id="updateNoteModal-@note.Id" tabindex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
-                                    @await Html.PartialAsync("_EditNoteForm", note)
-                                </div>
-                            </div>
-                            <ul>
-                                <li>Doctor Id: @note.DoctorId</li>
-                                <li>Patient Id: @note.PatientId</li>
-                                <li>Visited on: @note.VisitDate</li>
-                                <li>Note: @note.NoteText</li>
-                            </ul>
-                        </div>
-                    }
-                }
-            </div>
-        </div>
+        }
     </div>
+</div>
+</div>
 </section>
 
 @section Scripts {
@@ -423,7 +298,7 @@
   }
   
       document.addEventListener('readystatechange', function () {
-          var confirmationMessage = $(".confirmation-message");
+          const confirmationMessage = $(".confirmation-message");
                     
                     if (confirmationMessage.length > 0) {
                         confirmationMessage.fadeIn();
@@ -436,8 +311,8 @@
                  
    
    setTimeout(function () {
-       var successMessage = document.getElementById('successMessage');
-       var errorMessage = document.getElementById('errorMessage');
+       let successMessage = document.getElementById('successMessage');
+       const errorMessage = document.getElementById('errorMessage');
    
        if (successMessage) {
            successMessage.style.transition = 'opacity 1s ease-in-out';

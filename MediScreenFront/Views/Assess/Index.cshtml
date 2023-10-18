@@ -1,0 +1,131 @@
+@using Microsoft.IdentityModel.Tokens
+@model Tuple<List<Patient>, List<Note>?>
+
+@{
+    ViewBag.Title = "Assessment";
+}
+
+
+<section class="container pt-4">
+    <h2>@ViewData["Title"]</h2>
+    <div class="assessment-container">
+
+        @await Html.PartialAsync("_Navbar")
+
+        <div class="patientsWithRisk-container">
+             <!-- Toast for copy to clipboard -->
+                <div class="toast" id="copiedToast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong class="mr-auto">Copied</strong>
+                        <small class="text-muted">At @DateTime.Now.ToString("HH:mm:ss")</small>
+                        <button type="button" class="ml-2 mb-1 close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        The Patient Id has been copied to the clipboard.
+                    </div>
+                </div>
+            @if (!Model.Item1.IsNullOrEmpty() && Model.Item1.Count > 0)
+            {
+                <h3 class="m-3 text-decoration-underline">Patients with Diabetes risk</h3>
+                foreach (var patient in @Model.Item1)
+                {
+                    <div class="@(Model.Item1.Count > 1 ? "" : "col") patient-card card-body primary-border rounded p-3">
+                        <div class="card-buttons-group">
+                            <i class="fa-regular fa-user">&nbsp;</i>
+                            <p class="card-id" title="@patient.Id">Id: @patient.Id &nbsp;</p>
+                            <button title="Copy to clipboard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
+                                <i class="fa-solid fa-copy fs-6 p-0"></i>
+                            </button>
+                            <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <ul>
+                            <li>Gender: @patient.Gender</li>
+                            <li>Age: @patient.Age</li>
+                            <li>First Name: @patient.FName</li>
+                            <li>Last Name: @patient.LName</li>
+                            <li>Date of Birth: @patient.Dob</li>
+                            <li>Address: @patient.Address</li>
+                            <li>Phone: @patient.Phone</li>
+                        </ul>
+                        <div class="risk">
+                            <h4>Assessed risk: </h4>
+                            <p class="text-decoration-underline fw-bold">@patient.DiabetesRisk</p>
+                            <div class="progress">
+
+                                @if (patient.DiabetesRisk != null)
+                                {
+                                    var risk = patient.DiabetesRisk switch
+                                    {
+                                        "Borderline" => 1,
+                                        "In Danger" => 2,
+                                        "Early Onset" => 3,
+                                        _ => 0
+                                        };
+
+                                    var color = patient.DiabetesRisk switch
+                                    {
+                                        "Borderline" => "bg-info",
+                                        "In Danger" => "bg-warning",
+                                        "Early Onset" => "bg-danger",
+                                        _ => "bg-success"
+                                        };
+
+                                    var width = (risk * 33) + "%";
+
+                                    <div class="progress-bar @color" role="progressbar" style="width: @width" aria-valuenow="@risk" aria-valuemin="0" aria-valuemax="3"></div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <h3 class="m-3 text-decoration-underline">Patients with Diabetes risk</h3>
+                <div class="col patient-card card-body primary-border rounded p-3">
+                    <p class="text-center">No patients with Diabetes risk</p>
+                </div>
+            }     
+        </div>
+    </div>
+</section>
+
+
+@section Scripts
+{
+    <script>
+         function redirectToGetPatientNotes(patientId) {
+               window.location.href = '/Services/GetPatientNotes?getNotesByPatientId=' + patientId;
+         }
+         
+          function copyToClipboard(copiedId, type) {
+                    const el = document.createElement('textarea');
+                    el.value = copiedId, type;
+                    document.body.appendChild(el);
+                    el.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(el);
+            
+                    const toastElement = document.getElementById('copiedToast');
+                    const toastContent = toastElement.querySelector('.toast-body');
+                    const toast = new bootstrap.Toast(toastElement);
+                    toastElement.style.setProperty('max-width', '100% !important');
+                    toastContent.innerHTML = `The ${type} Id has been copied to the clipboard.`;
+                    toast.show();
+            
+          
+                    const closeBtn = toastElement.querySelector('.close');
+                    closeBtn.addEventListener('click', function () {
+                        toast.hide();
+                    });
+            
+                    setTimeout(function () {
+                        toast.hide();
+                    }, 4000); 
+                }
+     </script>
+}

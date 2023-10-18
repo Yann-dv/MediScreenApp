@@ -144,12 +144,12 @@ section.container {
         content: "Diabetes Risk";
     }
 
-    .patients-container, .notes-container {
+    .patients-container, .notes-container, .patientsWithRisk-container {
         display: flex;
         flex-wrap: wrap;
     }
 
-    .patients-container h3, .notes-container h3 {
+    .patients-container h3, .notes-container h3, .patientsWithRisk-container h3 {
         width: 100%;
     }
 }

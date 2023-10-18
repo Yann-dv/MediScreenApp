@@ -21,12 +21,7 @@ public class ServicesController : Controller
 
     public IActionResult Index(List<Patient>? patients)
     {
-        if (patients != null)
-        {
-            return View(Tuple.Create(patients, new List<Note>()));
-        }
-
-        return View();
+        return patients != null ? View(Tuple.Create(patients, new List<Note>())) : View();
     }
 
     public IActionResult GetOnePatient(string query)
@@ -46,7 +41,6 @@ public class ServicesController : Controller
                 else
                     ViewBag.StatusCode = response.Result.StatusCode;
             }
-            GetDiabetesRisk(patients);
         }
         catch (Exception e)
         {
@@ -73,12 +67,20 @@ public class ServicesController : Controller
                 else
                     ViewBag.StatusCode = response.Result.StatusCode;
             }
-
-            GetDiabetesRisk(patients);
         }
         catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
+        }
+
+
+        if (patients != null)
+        {
+            //GetAllDiabetesRisks and update it if null
+            foreach (var patient in patients.Where(patient => patient.DiabetesRisk == null))
+            {
+                GetDiabetesRisk(patient);
+            }
         }
 
         return View("Index", Tuple.Create(patients, new List<Note>()));
@@ -281,32 +283,60 @@ public class ServicesController : Controller
         return RedirectToAction("Index");
     }
 
-    private void GetDiabetesRisk(List<Patient>? patients)
+    private void GetDiabetesRisk(Patient? patient)
     {
         var diabetesRiskCalculator = new DiabetesRiskCalculator();
         var notes = new List<string>();
 
-        if (patients != null && patients.Count > 0)
+        if (patient == null) return;
+        
+        using (var response = new HttpClient().GetAsync(_apiNotesUri + "/GetPatientNotes/" + patient.Id))
         {
-            foreach (var patient in patients)
+            if (response.Result.StatusCode == HttpStatusCode.OK)
             {
-                using (var response = new HttpClient().GetAsync(_apiNotesUri + "/GetPatientNotes/" + patient.Id))
-                {
-                    if (response.Result.StatusCode == HttpStatusCode.OK)
-                    {
-                        var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
-                        var deserializedObject = JsonConvert.DeserializeObject<List<Note>>(apiResponseObject);
+                var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
+                var deserializedObject = JsonConvert.DeserializeObject<List<Note>>(apiResponseObject);
 
-                        notes = deserializedObject.Select(note => note.NoteText).ToList();
-                    }
-                    else
-                        ViewBag.StatusCode = response.Result.StatusCode;
-                }
-
+                if (deserializedObject != null) notes = deserializedObject.Select(note => note.NoteText).ToList();
+                
+                //Update diabestesRisk locally
                 patient.DiabetesRisk = diabetesRiskCalculator.CalculateDiabetesRiskReport(patient, notes);
+                
+                UpdatePatientDiabetesRisk(patient);
+            }
+            else
+                ViewBag.StatusCode = response.Result.StatusCode;
+        }
 
+        
+        
+    }
+
+    /// <summary>
+    /// Update diabetesRisk in DB
+    /// </summary>
+    /// <param name="patient"></param>
+    /// <returns></returns>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    private Task UpdatePatientDiabetesRisk(Patient patient)
+    {
+        using (var res = new HttpClient().PutAsync(_apiPatientsUri + "/UpdatePatient/" + patient.Id,
+                   new StringContent(JsonConvert.SerializeObject(patient), Encoding.UTF8, "application/json")))
+        {
+            //Update diabetesRisk in DB
+            if (res.Result.StatusCode == HttpStatusCode.OK)
+            {
+                ViewBag.StatusCode = res.Result.StatusCode;
+            }
+            else
+            {
+                ViewBag.StatusCode = res.Result.StatusCode;
+                Console.WriteLine("Response Data: " + res.Result.Content.ReadAsStringAsync().Result);
             }
         }
+
+        return Task.CompletedTask;
     }
 
     /// Notes ///
@@ -334,7 +364,6 @@ public class ServicesController : Controller
                     TempData["ErrorMessage"] = "Patient not found.";
                 }
             }
-            GetDiabetesRisk(patients);
         }
         catch (Exception e)
         {
@@ -351,6 +380,20 @@ public class ServicesController : Controller
                     var deserializedObject = JsonConvert.DeserializeObject<List<Note>>(apiResponseObject);
 
                     notes = deserializedObject;
+                    
+                    //Recalculate diabetesRisk
+                    if (patients != null)
+                    {
+                        if (deserializedObject != null)
+                        {
+                            var stringifyNotes = deserializedObject.Select(note => note.NoteText).ToList();
+                            var diabetesRiskCalculator = new DiabetesRiskCalculator();
+                            patients.First().DiabetesRisk = diabetesRiskCalculator.CalculateDiabetesRiskReport(patients.First(), stringifyNotes);
+                        }
+                        
+                        //DB update
+                        UpdatePatientDiabetesRisk(patients.First());
+                    } 
                 }
                 else
                     ViewBag.StatusCode = response.Result.StatusCode;
