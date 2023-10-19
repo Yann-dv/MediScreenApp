@@ -66,8 +66,8 @@
                                     var risk = patient.DiabetesRisk switch
                                     {
                                         "Borderline" => 1,
-                                        "In Danger" => 2,
-                                        "Early Onset" => 3,
+                                        "Early Onset" => 2,
+                                        "In Danger" => 3,
                                         "Declared diabetes" => 4,
                                         _ => 0
                                     };
@@ -75,8 +75,8 @@
                                     var color = patient.DiabetesRisk switch
                                     {
                                         "Borderline" => "bg-info",
-                                        "In Danger" => "bg-warning",
-                                        "Early Onset" => "bg-danger",
+                                        "Early Onset" => "bg-warning",
+                                        "In Danger" => "bg-danger",
                                         "Declared diabetes" => "bg-dark",
                                         _ => "bg-success"
                                     };

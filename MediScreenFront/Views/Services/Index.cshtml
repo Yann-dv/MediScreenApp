@@ -126,12 +126,12 @@
                     @switch (patient.DiabetesRisk)
                     {
                         case "In Danger":
-                            <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-warning" data-toggle="modal" data-target="#diabetesRiskModal">
+                            <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-danger" data-toggle="modal" data-target="#diabetesRiskModal">
                                 <i class="fa-solid fa-triangle-exclamation"></i>
                             </button>
                             break;
                         case "Early Onset":
-                            <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-danger" data-toggle="modal" data-target="#diabetesRiskModal">
+                            <button type="button" title="@patient.DiabetesRisk" class="btn diabetes-risk alert-warning" data-toggle="modal" data-target="#diabetesRiskModal">
                                 <i class="fa-solid fa-triangle-exclamation"></i>
                             </button>
                             break;
