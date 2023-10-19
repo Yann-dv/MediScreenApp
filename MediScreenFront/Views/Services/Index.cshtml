@@ -89,9 +89,8 @@
             {
                 <div class="@(Model.Item1.Count > 1 ? "" : "col") patient-card card-body primary-border rounded p-3">
                     <div class="card-buttons-group">
-                        <i class="fa-regular fa-user">&nbsp;</i>
-                        <p class="card-id" title="@patient.Id">Id: @patient.Id &nbsp;</p>
-                        <button title="Copy to clipboard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
+                        <div><i class="fa-regular fa-user btn btn-secondary" title="@patient.FName @patient.LName">&nbsp;</i></div>
+                        <div><button title="Copy to clipboard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
                             <i class="fa-solid fa-copy fs-6 p-0"></i>
                         </button>
                         <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
@@ -103,9 +102,10 @@
                                 <span class="visually-hidden">Notes count</span>
                             </span>
                         </button>
-                        <button type="button" title="Add a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNoteModal-@patient.Id">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
+                    <button type="button" title="Add a note" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNoteModal-@patient.Id">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    </div>
                     </div>
                     <div class="modal fade" id="createNoteModal-@patient.Id" tabindex="-1" aria-labelledby="createNoteModalTitle" aria-hidden="true">
                         @if (patient.Id != null)
@@ -114,11 +114,12 @@
                         }
                     </div>
                     <ul>
+                        <p class="card-id" title="@patient.Id">ID: @patient.Id &nbsp;</p>
                         <li>Gender: @patient.Gender</li>
                         <li>Age: @patient.Age</li>
                         <li>First Name: @patient.FName</li>
                         <li>Last Name: @patient.LName</li>
-                        <li>Date of Birth: @patient.Dob</li>
+                        <li>Date of Birth: @patient.Dob.ToString("dd/MM/yyyy")</li>
                         <li>Address: @patient.Address</li>
                         <li>Phone: @patient.Phone</li>
                     </ul>
@@ -190,9 +191,8 @@
             {
                 <div class="@(Model.Item2.Count > 1 ? "" : "col") note-card card-body primary-border rounded p-3">
                     <div class="card-buttons-group">
-                        <i class="fa-solid fa-list">&nbsp;</i>
-                        <p class="card-id" title="@note.Id">Id: @note.Id &nbsp;</p>
-                        <button title="Copy note id" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
+                        <div><i class="fa-solid fa-list" title="Note from the @note.VisitDate.ToString("dd/MM/yyyy")">&nbsp;</i></div>
+                        <div><button title="Copy note id" class="btn btn-primary" onclick="copyToClipboard('@note.Id', 'Note')">
                             <i class="fa-solid fa-copy fs-6"></i>
                         </button>
                         <button title="See patient" class="btn btn-primary" onclick="redirectToGetPatientNotes('@note.PatientId')">
@@ -204,14 +204,16 @@
                         <button title="Delete note" class="btn btn-danger" onclick="confirmDelete('@note.Id', '@note.PatientId')" data-note-id="@note.Id">
                             <i class="fa-solid fa-x"></i>
                         </button>
-                        <div class="modal fade" id="updateNoteModal-@note.Id" tabindex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
-                            @await Html.PartialAsync("_EditNoteForm", note)
+                            <div class="modal fade" id="updateNoteModal-@note.Id" tabindex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
+                                @await Html.PartialAsync("_EditNoteForm", note)
+                            </div>
                         </div>
                     </div>
                     <ul>
+                        <p class="card-id" title="@note.Id">Note ID: @note.Id &nbsp;</p>
                         <li>Doctor Id: @note.DoctorId</li>
                         <li>Patient Id: @note.PatientId</li>
-                        <li>Visited on: @note.VisitDate</li>
+                        <li>Visited on: @note.VisitDate.ToString("dd/MM/yyyy")</li>
                         <li>Note: @note.NoteText</li>
                     </ul>
                 </div>

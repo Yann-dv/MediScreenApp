@@ -33,16 +33,17 @@
                 {
                     <div class="@(Model.Item1.Count > 1 ? "" : "col") patient-card card-body primary-border rounded p-3">
                         <div class="card-buttons-group">
-                            <i class="fa-regular fa-user">&nbsp;</i>
-                            <p class="card-id" title="@patient.Id">Id: @patient.Id &nbsp;</p>
-                            <button title="Copy to clipboard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
+                            <div><i class="fa-regular fa-user btn btn-secondary">&nbsp;</i></div>
+                            <div><button title="Copy to clipboard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
                                 <i class="fa-solid fa-copy fs-6 p-0"></i>
                             </button>
-                            <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
+                                    <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                            </div>
                         </div>
                         <ul>
+                            <p class="card-id" title="@patient.Id">ID: @patient.Id &nbsp;</p>
                             <li>Gender: @patient.Gender</li>
                             <li>Age: @patient.Age</li>
                             <li>First Name: @patient.FName</li>
@@ -53,9 +54,13 @@
                         </ul>
                         <div class="risk">
                             <h4>Assessed risk: </h4>
-                            <p class="text-decoration-underline fw-bold">@patient.DiabetesRisk</p>
-                            <div class="progress">
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="declaredDiabetes-@patient.Id" class="custom-checkbox" name="declaredDiabetes" onchange="updateRiskAndColor('@patient.Id')">
+                                <label for="declaredDiabetes-@patient.Id" class="checkbox-label">Declare diabetic</label>
+                            </div>
+                            <p id="patientDiabetesRisk-@patient.Id" class="text-decoration-underline fw-bold">@patient.DiabetesRisk</p>
 
+                            <div class="progress">
                                 @if (patient.DiabetesRisk != null)
                                 {
                                     var risk = patient.DiabetesRisk switch
@@ -63,23 +68,29 @@
                                         "Borderline" => 1,
                                         "In Danger" => 2,
                                         "Early Onset" => 3,
+                                        "Declared diabetes" => 4,
                                         _ => 0
-                                        };
-
+                                    };
+                        
                                     var color = patient.DiabetesRisk switch
                                     {
                                         "Borderline" => "bg-info",
                                         "In Danger" => "bg-warning",
                                         "Early Onset" => "bg-danger",
+                                        "Declared diabetes" => "bg-dark",
                                         _ => "bg-success"
-                                        };
-
-                                    var width = (risk * 33) + "%";
-
-                                    <div class="progress-bar @color" role="progressbar" style="width: @width" aria-valuenow="@risk" aria-valuemin="0" aria-valuemax="3"></div>
+                                    };
+                        
+                                    var width = (risk * 30) + "%";
+                        
+                                    <div id="progressBar-@patient.Id" class="progress-bar @color" role="progressbar" 
+                                        style="width: @width" aria-valuenow="@risk" aria-valuemin="0" aria-valuemax="4"
+                                        data-original-risk="@risk" data-original-color="@color" data-original-diabetes-risk="@patient.DiabetesRisk">
+                                    </div>
                                 }
                             </div>
                         </div>
+
                     </div>
                 }
             }
@@ -97,6 +108,32 @@
 
 @section Scripts
 {
+    <script>
+       function updateRiskAndColor(id) {
+           let declaredDiabetesCheckbox = document.getElementById('declaredDiabetes-' + id);
+           let progressBar = document.querySelector('#progressBar-' + id);
+           let originalDiabetesRisk = progressBar.getAttribute('data-original-diabetes-risk');
+           let originalRisk = parseInt(progressBar.getAttribute('data-original-risk'));
+           let originalColor = progressBar.getAttribute('data-original-color');
+           let patientDiabetesRisk = document.querySelector('#patientDiabetesRisk-' + id);
+       
+           if (declaredDiabetesCheckbox.checked) {
+               progressBar.className = 'progress-bar bg-dark';
+               progressBar.style.width = '100%';
+               progressBar.setAttribute('aria-valuenow', '4');
+               patientDiabetesRisk.innerText = 'Diabetic';
+           } else {
+               progressBar.className = 'progress-bar ' + originalColor;
+               progressBar.style.width = (originalRisk * 30) + "%";
+               progressBar.setAttribute('aria-valuenow', originalRisk.toString());
+               patientDiabetesRisk.innerText = originalRisk === 4 ? 'Diabetic' : originalDiabetesRisk;
+           }
+       }
+
+
+
+    </script>
+
     <script>
          function redirectToGetPatientNotes(patientId) {
                window.location.href = '/Services/GetPatientNotes?getNotesByPatientId=' + patientId;
