@@ -34,6 +34,7 @@ public class MongoDbDatas
                 {
                     // Document does not exist, insert it
                     notesCollection.InsertOne(note);
+                    Console.WriteLine($"CREATION: Note with PatientId '{note.PatientId}' and VisitDate '{note.VisitDate}' inserted.");
                 }
                 else
                 {
