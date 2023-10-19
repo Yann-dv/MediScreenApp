@@ -26,7 +26,7 @@ services:
     container_name: mediscreen-api-container
     environment:
       ASPNETCORE_SCOPE: "docker"
-
+      MEDISCREEN_MONGODB_CONNECTIONSTRING: "mongodb+srv://MediscreenUser:BnIkKqZYxjNHbOwR@cluster0.inh05rr.mongodb.net"
     depends_on:
       - mediscreen-db-container
     build:
@@ -41,6 +41,8 @@ services:
   mediscreen:
     image: mediscreen-front:latest
     container_name: mediscreen-container
+    environment:
+      ASPNETCORE_SCOPE: "docker"
     build:
       context: . # Point to the root directory
       dockerfile: MediScreenFront/Dockerfile

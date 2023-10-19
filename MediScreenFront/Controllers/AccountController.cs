@@ -14,9 +14,11 @@ public class AccountController : Controller
 {
     private readonly HttpClient _apiClient = new()
     {
-        BaseAddress = new Uri("https://localhost:7192")
+        BaseAddress = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
+            ? new Uri("http://host.docker.internal:600/")
+            : new Uri("https://localhost:7192/")
     };
-
+    
     // Registration Action
     [HttpGet]
     public IActionResult Register()
@@ -70,7 +72,7 @@ public class AccountController : Controller
         catch (HttpRequestException ex)
         {
             ModelState.AddModelError(string.Empty, "Error during api call: " + ex.Message);
-            return false;  
+            return false;
         }
     }
 
