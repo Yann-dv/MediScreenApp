@@ -14,7 +14,7 @@ public class AssessController : Controller
         : "https://localhost:7192/api/Patients";
 
     private readonly string _apiAssessUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
-        ? "http://host.docker.internal:600/api/Notes"
+        ? "http://host.docker.internal:600/api/Assess"
         : "https://localhost:7192/api/Assess";
 
 
