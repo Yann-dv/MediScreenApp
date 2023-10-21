@@ -36,7 +36,9 @@ public class AssessController : Controller
                     var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
                     var deserializedObject = JsonConvert.DeserializeObject<List<Patient>>(apiResponseObject);
 
-                    patients = deserializedObject.Where(p => p.DiabetesRisk != null && p.DiabetesRisk != "None").ToList();
+                    if (deserializedObject != null)
+                        patients = deserializedObject.Where(p => p.DiabetesRisk != null && p.DiabetesRisk != "None")
+                            .ToList();
                 }
                 else
                     ViewBag.StatusCode = response.Result.StatusCode;
@@ -63,7 +65,7 @@ public class AssessController : Controller
                     var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
                     var deserializedObject = JsonConvert.DeserializeObject<Patient>(apiResponseObject);
 
-                    patients.Add(deserializedObject);
+                    if (deserializedObject != null) patients.Add(deserializedObject);
                 }
                 else
                     ViewBag.StatusCode = response.Result.StatusCode;
@@ -87,9 +89,9 @@ public class AssessController : Controller
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
                     var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
-                    var deserializedObject = JsonConvert.DeserializeObject<List<Patient>>(apiResponseObject);
+                    var deserializedObject = JsonConvert.DeserializeObject<Patient>(apiResponseObject);
 
-                    patients = deserializedObject;
+                    if (deserializedObject != null) patients.Add(deserializedObject);
                 }
                 else
                     ViewBag.StatusCode = response.Result.StatusCode;

@@ -23,28 +23,35 @@ public class AssessController : ControllerBase
     [Route("byId/{id}")]
     public async Task<ActionResult<Patient>> GetRiskyPatientById(string id)
     {
-        var patient = await _context.Patients.Where(p => p.DiabetesRisk != "None" || p.DiabetesRisk != null).FirstOrDefaultAsync(p => p.Id == id);
-
-        if (patient == null)
+        if (_context.Patients != null)
         {
-            return NotFound("Patient with id " + id + " don't have risk of diabetes.");
-        }
+            var patient = await _context.Patients.Where(p => p.DiabetesRisk != "None" || p.DiabetesRisk != null).FirstOrDefaultAsync(p => p.Id == id);
 
-        return patient;
+            if (patient == null)
+            {
+                return NotFound("Patient with id " + id + " don't have risk of diabetes.");
+            }
+
+            return patient;
+        }
+        return NotFound();
     }
     
     [HttpGet]
     [Route("byFamilyName/{familyName}")]
-    public async Task<ActionResult<IEnumerable<Patient>>> GetRiskyPatientByFamilyName(string familyName)
+    public async Task<ActionResult<Patient>> GetRiskyPatientByFamilyName(string familyName)
     {
-        var patients = await _context.Patients.Where(p => p.DiabetesRisk != "None" || p.DiabetesRisk != null).Where(p => p.LName.ToLower() == familyName.ToLower()).ToListAsync();
-
-        if (patients.Count < 1)
+        if (_context.Patients != null)
         {
-            return NotFound("Patient with family name " + familyName + " don't have risk of diabetes.");
+            var patient = await _context.Patients.Where(p => p.DiabetesRisk != "None" || p.DiabetesRisk != null).FirstOrDefaultAsync(p => p.LName.ToLower() == familyName.ToLower());
+
+            if (patient == null)
+            {
+                return NotFound("Patient with family name " + familyName + " don't have risk of diabetes.");
+            }
+
+            return patient;
         }
-
-        return patients;
+        return NotFound();
     } 
-
 }
