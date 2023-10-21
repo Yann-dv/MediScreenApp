@@ -11,10 +11,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     {
     }
 
-    public DbSet<ApplicationUser> Users { get; set; }
-    public DbSet<ApplicationRole> Roles { get; set; }
-    public DbSet<ApplicationUserClaim> UserClaims { get; set; }
-    public DbSet<Patient> Patients { get; set; }
+    public new DbSet<ApplicationUser>? Users { get; set; }
+    public new DbSet<ApplicationRole>? Roles { get; set; }
+    public new DbSet<ApplicationUserClaim>? UserClaims { get; set; }
+    public DbSet<Patient>? Patients { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
