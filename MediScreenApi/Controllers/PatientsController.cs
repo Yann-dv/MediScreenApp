@@ -98,11 +98,8 @@ public class PatientsController : ControllerBase
             patient.Address ??= "No address provided.";
             patient.Phone ??= "No phone number provided.";
             
-            await using (_context)
-            {
-                _context.Patients?.Add(patient);
-                await _context.SaveChangesAsync();
-            }
+            _context.Patients?.Add(patient);
+            await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
