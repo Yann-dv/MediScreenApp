@@ -10,8 +10,8 @@ namespace MediScreenApiTests
     public class NotesControllerTests
     {
         private IMongoCollection<Note>? _notesCollection;
-        private TestNotesController? _notesController = new(new MongoClient(mongoDbConnectionString), true);
-        private static string mongoDbConnectionString = Environment.GetEnvironmentVariable("MEDISCREEN_MONGODB_CONNECTIONSTRING");
+        private TestNotesController? _notesController = new(new MongoClient(MongoDbConnectionString), true);
+        private static readonly string MongoDbConnectionString = Environment.GetEnvironmentVariable("MEDISCREEN_MONGODB_CONNECTIONSTRING");
 
         [OneTimeSetUp]
         public void OneTimeSetup()
@@ -22,11 +22,24 @@ namespace MediScreenApiTests
             var database = mongoClient.GetDatabase(databaseName);
             _notesCollection = database.GetCollection<Note>("TestNotes");
             _notesController = new TestNotesController(mongoClient);
+            
+            _notesCollection?.InsertOne(
+                new Note
+                {
+                    Id = "6537688dafe3209f1e7ade5f",
+                    PatientId = "0f61060f-acad-413a-87d3-cb729fe53a2b",
+                    DoctorId = "20129",
+                    VisitDate = new DateTime(2023, 1, 18, 0, 0, 0, DateTimeKind.Utc),
+                    NoteText = "The patient, David Lee, was examined today for symptoms of feeling terrific and having a weight at or below the recommended level. No significant health issues were detected during the examination. The patient is advised to continue maintaining a healthy lifestyle.",
+                    NoteGuid = "f2ce6529-381a-4a38-a8ca-c2fec43ec39a"
+                });
+            //{"_id":{"$oid":"6537688dafe3209f1e7ade5f"},"patient_id":"0f61060f-acad-413a-87d3-cb729fe53a2b","doctor_id":"20129","visit_date":{"$date":{"$numberLong":"1695247200000"}},"note":"The patient, David Lee, was examined today for symptoms of feeling terrific and having a weight at or below the recommended level. No significant health issues were detected during the examination. The patient is advised to continue maintaining a healthy lifestyle.","note_guid":"f2ce6529-381a-4a38-a8ca-c2fec43ec39a"}
         }
 
         [OneTimeTearDown]
         public void OneTimeTeardown()
         {
+            _notesCollection?.DeleteMany(new BsonDocument());
         }
 
         [SetUp]
@@ -38,7 +51,6 @@ namespace MediScreenApiTests
         [TearDown]
         public void Teardown()
         {
-            //_notesCollection?.DeleteMany(new BsonDocument());
         }
 
         [Test]
