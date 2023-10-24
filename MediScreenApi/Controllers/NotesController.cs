@@ -11,13 +11,24 @@ namespace MediScreenApi.Controllers
     {
         private readonly IMongoCollection<Note> _notesCollection;
 
-        public NotesController(IMongoClient mongoClient)
+        public NotesController(IMongoClient mongoClient, bool isTest = false)
         {
-            string databaseName = "MediScreenMongoDb";
-            
-            var database = mongoClient.GetDatabase(databaseName);
+            if (isTest == false)
+            {
+                const string databaseName = "MediScreenMongoDb";
 
-            _notesCollection = database.GetCollection<Note>("Notes");
+                var database = mongoClient.GetDatabase(databaseName);
+
+                _notesCollection = database.GetCollection<Note>("Notes");
+            }
+            else
+            {
+                const string databaseName = "TestMediScreenMongoDb";
+
+                var database = mongoClient.GetDatabase(databaseName);
+
+                _notesCollection = database.GetCollection<Note>("TestNotes");
+            }
         }
 
         /// <summary>
@@ -66,7 +77,7 @@ namespace MediScreenApi.Controllers
             try
             {
                 var notes = _notesCollection.Find(n => n.PatientId == patientId).ToList();
-                if (notes == null)
+                if (notes == null || notes.Count < 1)
                 {
                     return NotFound();
                 }
@@ -201,7 +212,7 @@ namespace MediScreenApi.Controllers
             try
             {
                 var notes = _notesCollection.Find(n => n.PatientId == patientId).ToList();
-                if (notes == null)
+                if (notes == null || notes.Count < 1)
                 {
                     return NotFound();
                 }
