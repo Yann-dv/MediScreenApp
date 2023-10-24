@@ -23,14 +23,14 @@ public class PatientsController : ControllerBase
     [Route("GetAllPatients")]
     public async Task<ActionResult<IEnumerable<Patient>>> GetAllPatients()
     {
-        var patients = new List<Patient>();
-
-        if (!_context.Patients.Any())
+        if (_context.Patients != null && !_context.Patients.Any())
         {
             return NotFound();
         }
 
-        return await _context.Patients.ToListAsync();
+        if (_context.Patients != null) return await _context.Patients.ToListAsync();
+        
+        return NotFound();
     }
     
     /// <summary>
@@ -51,21 +51,24 @@ public class PatientsController : ControllerBase
             await using (_context)
             {
                 // Define a filter that checks if any of the specified fields match the query.
-                var patients = await _context.Patients
-                    .Where(p =>
-                        p.Id == query ||
-                        EF.Functions.Like(p.LName, "%" + query + "%") ||
-                        EF.Functions.Like(p.FName, "%" + query + "%") ||
-                        EF.Functions.Like(p.Phone, "%" + query + "%") ||
-                        EF.Functions.Like(p.Address, "%" + query + "%"))
-                    .ToListAsync();
-
-                if(patients.Count < 1)
+                if (_context.Patients != null)
                 {
-                    return NotFound("No patients found.");
-                }
+                    var patients = await _context.Patients
+                        .Where(p =>
+                            p.Id == query ||
+                            EF.Functions.Like(p.LName, "%" + query + "%") ||
+                            EF.Functions.Like(p.FName, "%" + query + "%") ||
+                            EF.Functions.Like(p.Phone ?? "No phone", "%" + query + "%") ||
+                            EF.Functions.Like(p.Address ?? "No address", "%" + query + "%"))
+                        .ToListAsync();
+
+                    if(patients.Count < 1)
+                    {
+                        return NotFound("No patients found.");
+                    }
                 
-                return Ok(patients);
+                    return Ok(patients);
+                }
             }
         }
         catch (Exception ex)
@@ -73,6 +76,7 @@ public class PatientsController : ControllerBase
             Console.WriteLine(ex);
             return StatusCode(500, "Internal server error + " + ex.Message);
         }
+        return NotFound();
     }
     
     [HttpPost]
@@ -96,7 +100,7 @@ public class PatientsController : ControllerBase
             
             await using (_context)
             {
-                _context.Patients.Add(patient);
+                _context.Patients?.Add(patient);
                 await _context.SaveChangesAsync();
             }
         }
@@ -120,50 +124,53 @@ public class PatientsController : ControllerBase
 
         try
         {
-            var existingPatient = await _context.Patients.FindAsync(id);
-
-            if (existingPatient == null)
+            if (_context.Patients != null)
             {
-                return NotFound("Patient not found.");
-            }
+                var existingPatient = await _context.Patients.FindAsync(id);
+
+                if (existingPatient == null)
+                {
+                    return NotFound("Patient not found.");
+                }
             
-            if(updatedPatient == existingPatient)
-            {
-                return Ok("No changes detected, patient updated with no changes.");
-            }
+                if(updatedPatient == existingPatient)
+                {
+                    return Ok("No changes detected, patient updated with no changes.");
+                }
 
-            // Update only the fields that have been changed
-            if(!string.IsNullOrWhiteSpace(updatedPatient.Age.ToString()) && existingPatient.Age != updatedPatient.Age)
-            {
-                existingPatient.Age = updatedPatient.Age;
-            }
-            if (!string.IsNullOrWhiteSpace(updatedPatient.FName) && existingPatient.FName != updatedPatient.FName)
-            {
-                existingPatient.FName = updatedPatient.FName;
-            }
-            if (!string.IsNullOrWhiteSpace(updatedPatient.LName) && existingPatient.LName != updatedPatient.LName)
-            {
-                existingPatient.LName = updatedPatient.LName;
-            }
-            if (!string.IsNullOrWhiteSpace(updatedPatient.Gender) && existingPatient.Gender != updatedPatient.Gender)
-            {
-                existingPatient.Gender = updatedPatient.Gender;
-            }
-            if (updatedPatient.Dob != DateTime.MinValue && existingPatient.Dob != updatedPatient.Dob)
-            {
-                existingPatient.Dob = updatedPatient.Dob;
-            }
-            if (!string.IsNullOrWhiteSpace(updatedPatient.Address) && existingPatient.Address != updatedPatient.Address)
-            {
-                existingPatient.Address = updatedPatient.Address;
-            }
-            if (!string.IsNullOrWhiteSpace(updatedPatient.Phone) && existingPatient.Phone != updatedPatient.Phone)
-            {
-                existingPatient.Phone = updatedPatient.Phone;
-            }
-            if(!string.IsNullOrWhiteSpace(updatedPatient.DiabetesRisk) && existingPatient.DiabetesRisk != updatedPatient.DiabetesRisk)
-            {
-                existingPatient.DiabetesRisk = updatedPatient.DiabetesRisk;
+                // Update only the fields that have been changed
+                if(!string.IsNullOrWhiteSpace(updatedPatient.Age.ToString()) && existingPatient.Age != updatedPatient.Age)
+                {
+                    existingPatient.Age = updatedPatient.Age;
+                }
+                if (!string.IsNullOrWhiteSpace(updatedPatient.FName) && existingPatient.FName != updatedPatient.FName)
+                {
+                    existingPatient.FName = updatedPatient.FName;
+                }
+                if (!string.IsNullOrWhiteSpace(updatedPatient.LName) && existingPatient.LName != updatedPatient.LName)
+                {
+                    existingPatient.LName = updatedPatient.LName;
+                }
+                if (!string.IsNullOrWhiteSpace(updatedPatient.Gender) && existingPatient.Gender != updatedPatient.Gender)
+                {
+                    existingPatient.Gender = updatedPatient.Gender;
+                }
+                if (updatedPatient.Dob != DateTime.MinValue && existingPatient.Dob != updatedPatient.Dob)
+                {
+                    existingPatient.Dob = updatedPatient.Dob;
+                }
+                if (!string.IsNullOrWhiteSpace(updatedPatient.Address) && existingPatient.Address != updatedPatient.Address)
+                {
+                    existingPatient.Address = updatedPatient.Address;
+                }
+                if (!string.IsNullOrWhiteSpace(updatedPatient.Phone) && existingPatient.Phone != updatedPatient.Phone)
+                {
+                    existingPatient.Phone = updatedPatient.Phone;
+                }
+                if(!string.IsNullOrWhiteSpace(updatedPatient.DiabetesRisk) && existingPatient.DiabetesRisk != updatedPatient.DiabetesRisk)
+                {
+                    existingPatient.DiabetesRisk = updatedPatient.DiabetesRisk;
+                }
             }
 
             await _context.SaveChangesAsync();
@@ -188,14 +195,18 @@ public class PatientsController : ControllerBase
 
         try
         {
-            var existingPatient = await _context.Patients.FindAsync(id);
-
-            if (existingPatient == null)
+            if (_context.Patients != null)
             {
-                return NotFound("Patient not found.");
+                var existingPatient = await _context.Patients.FindAsync(id);
+
+                if (existingPatient == null)
+                {
+                    return NotFound("Patient not found.");
+                }
+
+                _context.Patients.Remove(existingPatient);
             }
 
-            _context.Patients.Remove(existingPatient);
             await _context.SaveChangesAsync();
 
             return Ok("Patient successfully deleted.");
