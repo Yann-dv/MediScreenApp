@@ -11,7 +11,7 @@ namespace MediScreenApiTests
     {
         private IMongoCollection<Note>? _notesCollection;
         private TestNotesController? _notesController = new(new MongoClient(MongoDbConnectionString), true);
-        private static readonly string MongoDbConnectionString = Environment.GetEnvironmentVariable("MEDISCREEN_MONGODB_CONNECTIONSTRING");
+        private static readonly string? MongoDbConnectionString = Environment.GetEnvironmentVariable("MEDISCREEN_MONGODB_CONNECTIONSTRING");
 
         [OneTimeSetUp]
         public void OneTimeSetup()
@@ -72,7 +72,7 @@ namespace MediScreenApiTests
         public void GetNoteById_ExistingNote_ReturnsNote()
         {
             // Act
-            var result = _notesController.GetNoteById("6537688dafe3209f1e7ade5f");
+            var result = _notesController?.GetNoteById("6537688dafe3209f1e7ade5f");
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -87,11 +87,11 @@ namespace MediScreenApiTests
                     break;
             }
 
-            var obj = result.Result as ObjectResult;
+            var obj = result?.Result as ObjectResult;
             var note = obj?.Value as Note;
             Assert.That(obj?.Value, Is.Not.Null);
             Assert.That(obj?.Value, Is.TypeOf<Note>());
-            Assert.That(note.Id, Is.EqualTo("6537688dafe3209f1e7ade5f"));
+            Assert.That(note?.Id, Is.EqualTo("6537688dafe3209f1e7ade5f"));
         }
 
         [Test]
@@ -104,7 +104,7 @@ namespace MediScreenApiTests
                 new() { PatientId = testPatientId },
                 new() { PatientId = "otherPatientIdGuid" }
             };
-            _notesCollection.InsertMany(testNotes);
+            _notesCollection?.InsertMany(testNotes);
 
             // Act
             if (_notesController != null)
@@ -169,7 +169,7 @@ namespace MediScreenApiTests
 
             // Assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.StatusCode, Is.EqualTo(201));
+            if (result != null) Assert.That(result.StatusCode, Is.EqualTo(201));
 
             var insertedNote = _notesCollection.Find(n => n.Id == testNote.Id).FirstOrDefault();
             Assert.That(insertedNote, Is.Not.Null);
@@ -207,7 +207,7 @@ namespace MediScreenApiTests
 
             // Assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.StatusCode, Is.EqualTo(200));
+            if (result != null) Assert.That(result.StatusCode, Is.EqualTo(200));
 
             var updatedNoteFromDb = _notesCollection.Find(n => n.Id == testNote.Id).FirstOrDefault();
             Assert.That(updatedNoteFromDb, Is.Not.Null);
@@ -250,7 +250,7 @@ namespace MediScreenApiTests
 
             // Assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.StatusCode, Is.EqualTo(404));
+            if (result != null) Assert.That(result.StatusCode, Is.EqualTo(404));
         }
 
         [Test]
@@ -259,9 +259,9 @@ namespace MediScreenApiTests
             var testPatientId = "testPatientId";
             var testNotes = new List<Note>
             {
-                new Note { PatientId = testPatientId, NoteText = "Note 1" },
-                new Note { PatientId = testPatientId, NoteText = "Note 2" },
-                new Note { PatientId = "otherPatientId" } // Note pour un autre patient.
+                new() { PatientId = testPatientId, NoteText = "Note 1" },
+                new() { PatientId = testPatientId, NoteText = "Note 2" },
+                new() { PatientId = "otherPatientId" } // Note pour un autre patient.
             };
             _notesCollection?.InsertMany(testNotes);
 
@@ -269,11 +269,11 @@ namespace MediScreenApiTests
             var result = _notesController?.DeleteAllPatientNotes(testPatientId) as NoContentResult;
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(204, result.StatusCode);
+            Assert.That(result, Is.Not.Null);
+            if (result != null) Assert.That(result.StatusCode, Is.EqualTo(204));
 
             var remainingNotes = _notesCollection.Find(n => n.PatientId == testPatientId).ToList();
-            Assert.IsEmpty(remainingNotes);
+            Assert.That(remainingNotes, Is.Empty);
         }
 
         [Test]
