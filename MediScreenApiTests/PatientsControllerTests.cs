@@ -1,4 +1,5 @@
 using MediScreenApi.Models;
+using MediScreenApiTests.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -135,11 +136,10 @@ namespace MediScreenApiTests
             // Assert
             Assert.That(result.Result, Is.Not.Null);
             Assert.That(resultObject?.StatusCode, Is.EqualTo(200));
-            var patients = result.Value as List<Patient>;
+            var patients = resultObject?.Value as List<Patient>;
             Assert.That(patients, Is.Not.Null);
             Assert.That(patients, Has.Count.EqualTo(1));
-            //TODO: fix it
-
+            Assert.That(patients?[0].FName, Is.EqualTo("John"));
         }
 
 

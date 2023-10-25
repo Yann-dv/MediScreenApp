@@ -1,7 +1,7 @@
 using MediScreenApi.Controllers;
 using MongoDB.Driver;
 
-namespace MediScreenApiTests;
+namespace MediScreenApiTests.Controllers;
 
 public class TestNotesController : NotesController
 {

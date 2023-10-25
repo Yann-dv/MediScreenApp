@@ -1,7 +1,7 @@
 using MediScreenApi.Controllers;
 using MediScreenApi.Models;
 
-namespace MediScreenApiTests;
+namespace MediScreenApiTests.Controllers;
 
 public class TestPatientsController : PatientsController
 {

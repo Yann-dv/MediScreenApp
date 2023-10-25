@@ -1,4 +1,5 @@
 using MediScreenApi.Models;
+using MediScreenApiTests.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
