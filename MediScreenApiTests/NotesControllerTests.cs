@@ -34,7 +34,6 @@ namespace MediScreenApiTests
                     NoteText = "The patient, David Lee, was examined today for symptoms of feeling terrific and having a weight at or below the recommended level. No significant health issues were detected during the examination. The patient is advised to continue maintaining a healthy lifestyle.",
                     NoteGuid = "f2ce6529-381a-4a38-a8ca-c2fec43ec39a"
                 });
-            //{"_id":{"$oid":"6537688dafe3209f1e7ade5f"},"patient_id":"0f61060f-acad-413a-87d3-cb729fe53a2b","doctor_id":"20129","visit_date":{"$date":{"$numberLong":"1695247200000"}},"note":"The patient, David Lee, was examined today for symptoms of feeling terrific and having a weight at or below the recommended level. No significant health issues were detected during the examination. The patient is advised to continue maintaining a healthy lifestyle.","note_guid":"f2ce6529-381a-4a38-a8ca-c2fec43ec39a"}
         }
 
         [OneTimeTearDown]

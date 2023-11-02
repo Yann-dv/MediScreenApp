@@ -5,6 +5,8 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,6 +22,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.10" />
         <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
+        <PackageReference Include="PuppeteerSharp" Version="12.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 

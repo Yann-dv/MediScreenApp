@@ -16,9 +16,9 @@ public class AssessController : ControllerBase
     }
 
     /// <summary>
-    /// Get a list of all patients.
+    /// Get a patient with diabetes risk by id.
     /// </summary>
-    /// <returns>A list of patients with diabetes Risk.</returns>
+    /// <returns>A single patient with diabetes risk.</returns>
     [HttpGet]
     [Route("byId/{id}")]
     public async Task<ActionResult<Patient>> GetRiskyPatientById(string id)
@@ -37,6 +37,11 @@ public class AssessController : ControllerBase
         return NotFound();
     }
     
+    /// <summary>
+    /// Get a patient with diabetes risk by family name.
+    /// </summary>
+    /// <param name="familyName"></param>
+    /// <returns>A single patient with diabetes risk.</returns>
     [HttpGet]
     [Route("byFamilyName/{familyName}")]
     public async Task<ActionResult<Patient>> GetRiskyPatientByFamilyName(string familyName)
