@@ -70,7 +70,7 @@ public class SwaggerToPdfGenerator
 
                             var routeHtml = $@"
                                 <div class='oneRoute'>
-                                    <h3 style='text-decoration:underline;'>Route: {routePath}</h3>
+                                    <h3 style='text-decoration:underline;'>Route: ~root{routePath}</h3>
                                     <p>Type: {operationName.ToUpper()}</p>
                                     <p>Summary: {operationSummary}</p>
                                     <p>Description: {operationDescription}</p>
@@ -119,7 +119,7 @@ public class SwaggerToPdfGenerator
 
             await page.WaitForSelectorAsync("#routesContainer");
             // Generate a PDF from the page content
-            await page.PdfAsync(outputPdfFilePath, new PdfOptions { Format = PaperFormat.A4, PrintBackground = true });
+            await page.PdfAsync(outputPdfFilePath, new PdfOptions { Format = PaperFormat.A4, PrintBackground = true, MarginOptions = new MarginOptions { Top = "20px", Bottom = "20px", Left = "20px", Right = "20px" } });
         }
         catch (Exception ex)
         {
