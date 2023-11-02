@@ -35,6 +35,7 @@ namespace MediScreenApi.Controllers
         /// Get all notes
         /// </summary>
         /// <returns></returns>
+        /// <description>Allow the client to get all the Notes, from all patients</description>
         [HttpGet]
         [Route("GetAllNotes")]
         public ActionResult<IEnumerable<Note>> GetAllNotes()
@@ -50,6 +51,12 @@ namespace MediScreenApi.Controllers
             }
         }
         
+        /// <summary>
+        /// Count all notes of a specific patient
+        /// </summary>
+        /// <param name="patientId"></param>
+        /// <returns></returns>
+        /// <description>Return a count of all notes of a patient, to display it in a counter</description>
         [HttpGet]
         [Route("CountPatientNotes/{patientId}")]
         public int CountPatientNotes(string patientId)

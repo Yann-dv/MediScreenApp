@@ -22,8 +22,12 @@ public class AuthController : ControllerBase
         _userManager = userManager;
         _signInManager = signInManager;
     }
-    
-        
+
+    /// <summary>
+    /// Get all users
+    /// </summary>
+    /// <returns></returns>
+    /// <description>This method allow the client to get all registered users</description>
     [HttpGet]
     [Route("GetAllUsers")]
     public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetAllUsers()
@@ -37,7 +41,13 @@ public class AuthController : ControllerBase
 
         return await _userManager.Users.ToListAsync();
     }
-    
+
+    /// <summary>
+    /// Register a new user
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    /// <description>This method allow the client to register a new user</description>
     [HttpPost]
     [Route("Register")]
     public async Task<IActionResult> Register(RegisterViewModel model)
@@ -64,8 +74,15 @@ public class AuthController : ControllerBase
 
         return BadRequest();
     }
-    
-    
+
+
+    /// <summary>
+    /// Check if a user exists
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    /// <description>This method allow the client to check if a user exists</description>
     [HttpGet]
     [Route("UserExists")]
     public async Task<IActionResult> UserExists(string userName, string email)
@@ -86,8 +103,14 @@ public class AuthController : ControllerBase
 
         return Ok(false);
     }
-    
-    
+
+
+    /// <summary>
+    /// Login a user
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    /// <description>This method allow the client to login a user</description>
     [HttpPost]
     [Route("Login")]
     public async Task<IActionResult> Login([FromBody] LoginViewModel model)
@@ -127,6 +150,5 @@ public class AuthController : ControllerBase
             token = new JwtSecurityTokenHandler().WriteToken(token),
             expiration = token.ValidTo
         });
-        
     }
 }

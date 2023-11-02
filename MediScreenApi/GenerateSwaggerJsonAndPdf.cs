@@ -2,52 +2,89 @@ using System.Text.Json;
 using System.Xml.Linq;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Xml.XPath;
+using Microsoft.OpenApi.Models;
 
-namespace MediScreenApi
+namespace MediScreenApi;
+
+public class GenerateSwaggerJsonAndPdf
 {
-    public class GenerateSwaggerJsonAndPdf
+    internal async Task Generate(WebApplication app)
     {
-        internal async Task Generate(WebApplication app)
+        var serviceProvider = app.Services.GetRequiredService<IServiceProvider>();
+        var swaggerGen = serviceProvider.GetRequiredService<ISwaggerProvider>();
+
+        var swaggerDoc = swaggerGen.GetSwagger("v1");
+
+        // Load the XML documentation file
+        var xmlFilePath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "bin", "Debug", "net7.0",
+            "MediScreenApi.xml");
+        var xmlDoc = XDocument.Load(xmlFilePath);
+
+        // Iterate through Swagger operations and update the Summary and Description
+        foreach (var pathItem in swaggerDoc.Paths)
         {
-            var serviceProvider = app.Services.GetRequiredService<IServiceProvider>();
-            var swaggerGen = serviceProvider.GetRequiredService<ISwaggerProvider>();
-
-            var swaggerDoc = swaggerGen.GetSwagger("v1");
-
-            // Load the XML documentation file
-            var xmlFilePath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "bin", "Debug", "net7.0", "MediScreenApi.xml");
-            var xmlDoc = XDocument.Load(xmlFilePath);
-
-            // Iterate through Swagger operations and update the Summary and Description
-            foreach (var pathItem in swaggerDoc.Paths.Values)
+            foreach (var operationEntry in pathItem.Value.Operations)
             {
-                foreach (var operation in pathItem.Operations)
-                {
-                    var methodInfo = operation.Value.OperationId; // Use the OperationId to identify the method
-                    var memberName = $"M:{methodInfo}";
-                    var summaryNode = xmlDoc.XPathSelectElement($"/doc/members/member[@name='{memberName}']/summary");
-                    var descriptionNode = xmlDoc.XPathSelectElement($"/doc/members/member[@name='{memberName}']/returns");
+                // Determine the HTTP method (GET, POST, PUT, DELETE)
+                var httpMethod = operationEntry.Key;
 
-                    if (summaryNode != null)
-                        operation.Value.Summary = summaryNode.Value.Trim();
+                // Get the URL path
+                var urlPath = pathItem.Key;
 
-                    if (descriptionNode != null)
-                        operation.Value.Description = descriptionNode.Value.Trim();
-                }
+                // Match operations based on HTTP method and route
+                var controllerName = operationEntry.Value.Tags[0].Name + "Controller";
+
+                var methodName = GetMethodNamePath(controllerName, urlPath);
+                var memberNamePattern = $"M:MediScreenApi.Controllers.{controllerName}.{methodName}";
+
+                var summaryNode = xmlDoc.XPathSelectElement(
+                    $"//member[starts-with(@name, '{memberNamePattern}')]/summary");
+
+                var descriptionNode = xmlDoc.XPathSelectElement(
+                    $"//member[starts-with(@name, '{memberNamePattern}')]/description");
+                
+                if (summaryNode != null)
+                    operationEntry.Value.Summary = summaryNode.Value.Trim();
+
+                if (descriptionNode != null)
+                    operationEntry.Value.Description = descriptionNode.Value.Trim();
             }
-
-            // Serialize the OpenApiDocument to JSON
-            var json = JsonSerializer.Serialize(swaggerDoc, new JsonSerializerOptions() { WriteIndented = true });
-
-            // Save the Swagger JSON to a file
-            string jsonPath = "swagger/v1/swagger.json";
-            File.WriteAllText(jsonPath, json);
-
-            // Convert the Swagger JSON to PDF
-            string pdfPath = "swagger/v1/swagger.pdf";
-            var pdfGenerator = new SwaggerToPdfGenerator();
-            await pdfGenerator.GeneratePdfFromSwaggerJsonAsync(jsonPath, pdfPath);
         }
 
+        // Serialize the OpenApiDocument to JSON
+        var json = JsonSerializer.Serialize(swaggerDoc, new JsonSerializerOptions() { WriteIndented = true });
+
+        // Save the Swagger JSON to a file
+        var jsonPath = "swagger/v1/swagger.json";
+        await File.WriteAllTextAsync(jsonPath, json);
+        Console.WriteLine($"API json file saved to {jsonPath}");
+
+        // Convert the Swagger JSON to PDF
+        var pdfPath = "swagger/v1/swagger.pdf";
+        var pdfGenerator = new SwaggerToPdfGenerator();
+        await pdfGenerator.GeneratePdfFromSwaggerJsonAsync(jsonPath, pdfPath);
+    }
+
+    private string GetMethodNamePath(string controllerName, string urlPath)
+    {
+        switch (controllerName)
+        {
+            case "AssessController" when urlPath == "/api/Assess/byId/{id}":
+                return "GetRiskyPatientById";
+            case "AssessController" when urlPath == "/api/Assess/byFamilyName/{familyName}":
+                return "GetRiskyPatientByFamilyName";
+            case "AuthController" when urlPath == "/api/Auth/Login":
+                return "Login";
+            case "AuthController" when urlPath == "/api/Auth/Register":
+                return "Register";
+            case "AuthController" when urlPath == "/api/Auth/GetAllUsers":
+                return "GetAllUsers";
+            case "AuthController" when urlPath == "/api/Auth/UserExists/{username}":
+                return "UserExists";
+           default:
+                return "Not Found";
+        }
+
+        return "Not Found";
     }
 }
