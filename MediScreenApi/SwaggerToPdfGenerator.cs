@@ -80,16 +80,16 @@ public class SwaggerToPdfGenerator
                             await page.EvaluateExpressionAsync(
                                 $"document.querySelector('#routesContainer .route:last-child').innerHTML += `{routeHtml}`");
 
-                            if (parameters != null)
+                            if (parameters != null && parameters.Any())
                             {
                                 foreach (var parameter in parameters.Children())
                                 {
-                                    var parameterName = parameter.Value<string>("Name");
-                                    var parameterSchema = parameter["Schema"];
-                                    var parameterType = parameterSchema?.Value<string>("Type");
-                                    var parameterRequired = parameter.Value<bool>("Required") ? "Yes" : "No";
+                                        var parameterName = parameter.Value<string>("Name");
+                                        var parameterSchema = parameter["Schema"];
+                                        var parameterType = parameterSchema?.Value<string>("Type");
+                                        var parameterRequired = parameter.Value<bool>("Required") ? "Yes" : "No";
 
-                                    var parameterHtml = $@"
+                                        var parameterHtml = $@"
                                         <div class='parameter'>
                                             <span>Parameter: {parameterName}</span> <br />
                                             <span>Type: {parameterType}</span> <br />
@@ -99,7 +99,18 @@ public class SwaggerToPdfGenerator
 
                                     await page.EvaluateExpressionAsync(
                                         $"document.querySelector('#routesContainer .route:last-child').innerHTML += `{parameterHtml}`");
+                                    
                                 }
+                            }
+                            else
+                            {
+                                   var parameterHtml = $@"
+                                        <div class='parameter'>
+                                            <p>Parameter: No parameters</p>
+                                        </div>
+                                        ";
+                                   await page.EvaluateExpressionAsync(
+                                       $"document.querySelector('#routesContainer .route:last-child').innerHTML += `{parameterHtml}`");
                             }
                         }
                     }

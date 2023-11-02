@@ -19,6 +19,7 @@ public class PatientsController : ControllerBase
     /// Get a list of all patients.
     /// </summary>
     /// <returns>A list of patients.</returns>
+    /// <description> Allow the client to get the list of all patients</description>
     [HttpGet]
     [Route("GetAllPatients")]
     public async Task<ActionResult<IEnumerable<Patient>>> GetAllPatients()
@@ -37,6 +38,7 @@ public class PatientsController : ControllerBase
     /// Get one patient
     /// </summary>
     /// <returns>A list of patients.</returns>
+    /// <description> Allow the client to get one patient, queried by id, family name, first name, phone or address</description>
     [HttpGet]
     [Route("GetOnePatient")]
     public async Task<ActionResult<IEnumerable<Patient>>> GetOnePatient(string query)
@@ -79,6 +81,12 @@ public class PatientsController : ControllerBase
         return NotFound();
     }
     
+    /// <summary>
+    /// Create a new patient
+    /// </summary>
+    /// <param name="patient"></param>
+    /// <returns></returns>
+    /// <description>Allow the client to create a new patient</description>
     [HttpPost]
     [Route("CreatePatient")]
     public async Task<ActionResult<Patient>> PostPatient(Patient patient)
@@ -110,6 +118,13 @@ public class PatientsController : ControllerBase
         return Ok("Patient successfully created: " + patient.Id);
     }
 
+    /// <summary>
+    /// Update a patient
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="updatedPatient"></param>
+    /// <returns></returns>
+    /// <description>Allow the client to update an existing patient</description>
     [HttpPut]
     [Route("UpdatePatient/{id}")]
     public async Task<IActionResult> UpdatePatient(string id, Patient updatedPatient)
@@ -181,6 +196,12 @@ public class PatientsController : ControllerBase
         }
     }
     
+    /// <summary>
+    /// Delete a patient
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// <description>Allow the client to delete an existing patient</description>
     [HttpDelete]
     [Route("DeletePatient/{id}")]
     public async Task<IActionResult> DeletePatient(string id)
@@ -214,5 +235,4 @@ public class PatientsController : ControllerBase
             return StatusCode(500, "Internal server error + " + ex.Message);
         }
     }
-
 }

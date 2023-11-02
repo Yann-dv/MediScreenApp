@@ -77,6 +77,7 @@ namespace MediScreenApi.Controllers
         /// </summary>
         /// <param name="patientId"></param>
         /// <returns></returns>
+        /// <description>Allow the client to get all the Notes, from a specific patient</description>
         [HttpGet]
         [Route("GetPatientNotes/{patientId}")]
         public IActionResult GetPatientNotes(string patientId)
@@ -101,6 +102,7 @@ namespace MediScreenApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        /// <description>Allow the client to get a specific note, by its ID</description>
         [HttpGet]
         [Route("GetNote/{id}")]
         public ActionResult<Note> GetNoteById(string id)
@@ -125,6 +127,7 @@ namespace MediScreenApi.Controllers
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
+        /// <description>Allow the client to create a new note</description>
         [HttpPost]
         [Route("CreateNote")]
         public IActionResult CreateNote([FromBody] Note note)
@@ -154,6 +157,7 @@ namespace MediScreenApi.Controllers
         /// <param name="id"></param>
         /// <param name="updatedNote"></param>
         /// <returns></returns>
+        /// <description>Allow the client to update an existing note</description>
         [HttpPut]
         [Route("UpdateNote/{id}")]
         public IActionResult UpdateNote(string id, [FromBody] Note updatedNote)
@@ -186,6 +190,7 @@ namespace MediScreenApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        /// <description>Allow the client to delete a specific note, by its ID</description>
         [HttpDelete]
         [Route("DeleteNote/{id}")]
         public IActionResult DeleteNoteById(string id)
@@ -212,6 +217,7 @@ namespace MediScreenApi.Controllers
         /// </summary>
         /// <param name="patientId"></param>
         /// <returns></returns>
+        /// <description>Allow the client to delete all the notes, from a specific patient</description>
         [HttpDelete]
         [Route("DeleteAllPatientNotes/{patientId }")]
         public IActionResult DeleteAllPatientNotes(string patientId)
