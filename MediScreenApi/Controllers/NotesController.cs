@@ -219,7 +219,7 @@ namespace MediScreenApi.Controllers
         /// <returns></returns>
         /// <description>Allow the client to delete all the notes, from a specific patient</description>
         [HttpDelete]
-        [Route("DeleteAllPatientNotes/{patientId }")]
+        [Route("DeleteAllPatientNotes/{patientId}")]
         public IActionResult DeleteAllPatientNotes(string patientId)
         {
             try

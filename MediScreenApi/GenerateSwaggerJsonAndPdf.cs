@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Xml.Linq;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Xml.XPath;
-using Microsoft.OpenApi.Models;
 
 namespace MediScreenApi;
 
@@ -73,15 +72,45 @@ public class GenerateSwaggerJsonAndPdf
                 return "GetRiskyPatientById";
             case "AssessController" when urlPath == "/api/Assess/byFamilyName/{familyName}":
                 return "GetRiskyPatientByFamilyName";
+            
             case "AuthController" when urlPath == "/api/Auth/Login":
                 return "Login";
             case "AuthController" when urlPath == "/api/Auth/Register":
                 return "Register";
             case "AuthController" when urlPath == "/api/Auth/GetAllUsers":
                 return "GetAllUsers";
-            case "AuthController" when urlPath == "/api/Auth/UserExists/{username}":
+            case "AuthController" when urlPath == "/api/Auth/UserExists":
                 return "UserExists";
-           default:
+            
+            case "NotesController" when urlPath == "/api/Notes/GetAllNotes":
+                return "GetAllNotes";
+            case "NotesController" when urlPath == "/api/Notes/CountPatientNotes/{patientId}":
+                return "CountPatientNotes";
+            case "NotesController" when urlPath == "/api/Notes/GetPatientNotes/{patientId}":
+                return "GetPatientNotes";
+            case "NotesController" when urlPath == "/api/Notes/GetNote/{id}":
+                return "GetNote";
+            case "NotesController" when urlPath == "/api/Notes/CreateNote":
+                return "CreateNote";
+            case "NotesController" when urlPath == "/api/Notes/UpdateNote/{id}":
+                return "UpdateNote";
+            case "NotesController" when urlPath == "/api/Notes/DeleteNote/{id}":
+                return "DeleteNote";
+            case "NotesController" when urlPath == "/api/Notes/DeleteAllPatientNotes/{patientId}":
+                return "DeleteAllPatientNotes";
+      
+           case "PatientsController" when urlPath == "/api/Patients/GetAllPatients":
+               return "GetAllPatients";
+           case "PatientsController" when urlPath == "/api/Patients/GetOnePatient":
+               return "GetOnePatient";
+           case "PatientsController" when urlPath == "/api/Patients/CreatePatient":
+               return "CreatePatient";
+           case "PatientsController" when urlPath == "/api/Patients/UpdatePatient/{id}":
+               return "UpdatePatient";
+           case "PatientsController" when urlPath == "/api/Patients/DeletePatient/{id}":
+               return "DeletePatient";
+           
+            default:
                 return "Not Found";
         }
 
