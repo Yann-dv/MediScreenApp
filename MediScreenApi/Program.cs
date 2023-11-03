@@ -89,7 +89,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "MediScreen API V1");
     });
 
-    if(env == "docker")
+    if(env != "docker")
     {
         // Generate the Swagger JSON and PDF
         await new GenerateSwaggerJsonAndPdf().Generate(app);
