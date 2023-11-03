@@ -1,11 +1,12 @@
-using MediScreenApi.Models;
-using Microsoft.AspNetCore.Identity;
+using System.Reflection;
+using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using MediScreenApi.Models;
+using MediScreenApi;
+using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 builder.Services.AddControllers();
 
 // Define default connection strings based on launchSettings.json
@@ -41,7 +42,7 @@ builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
         Console.WriteLine("MongoDB connection string is missing or empty.");
         mongoDbConnectionString = "mongodb://mongo:27017";
         // Handle the missing connection string as needed.
-        // throw new ApplicationException("MongoDB connection string is missing or empty.");
+        // throw an ApplicationException("MongoDB connection string is missing or empty.");
     }
 
     return new MongoClient(mongoDbConnectionString);
@@ -50,16 +51,24 @@ builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 builder.Services.AddScoped<IMongoDatabase>(serviceProvider =>
 {
     var client = serviceProvider.GetRequiredService<IMongoClient>();
-    return client.GetDatabase("MediScreenMongoDb"); // Replace with your MongoDB database name
+    return client.GetDatabase("MediScreenMongoDb");
 });
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Add Swagger generation and Swagger UI
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "MediScreen API", Version = "v1" });
+    // Include the XML comments
+    var xmlFile = "MediScreenApi.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+});
 
+// Build the application
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -69,18 +78,29 @@ using (var scope = app.Services.CreateScope())
     dbContext.SeedData();
 }
 
+MongoDbDatas.NotesSeeding();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MediScreen API V1");
+    });
+
+    if(env != "docker")
+    {
+        // Generate the Swagger JSON and PDF
+        await new GenerateSwaggerJsonAndPdf().Generate(app);
+    }
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 app.UseAuthentication();
-
 app.MapControllers();
-
 app.Run();
+
+
+

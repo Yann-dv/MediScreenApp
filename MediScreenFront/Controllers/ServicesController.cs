@@ -14,19 +14,14 @@ public class ServicesController : Controller
     private readonly string _apiPatientsUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
         ? "http://host.docker.internal:600/api/Patients"
         : "https://localhost:7192/api/Patients";
-    
+
     private readonly string _apiNotesUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
         ? "http://host.docker.internal:600/api/Notes"
         : "https://localhost:7192/api/Notes";
 
     public IActionResult Index(List<Patient>? patients)
     {
-        if (patients != null)
-        {
-            return View(Tuple.Create(patients, new List<Note>()));
-        }
-
-        return View();
+        return patients != null ? View(Tuple.Create(patients, new List<Note>())) : View();
     }
 
     public IActionResult GetOnePatient(string query)
@@ -78,6 +73,16 @@ public class ServicesController : Controller
             ViewBag.StatusCode = e.Message;
         }
 
+
+        if (patients != null)
+        {
+            //GetAllDiabetesRisks and update it if null
+            foreach (var patient in patients.Where(patient => patient.DiabetesRisk == null))
+            {
+                GetDiabetesRisk(patient);
+            }
+        }
+
         return View("Index", Tuple.Create(patients, new List<Note>()));
     }
 
@@ -90,6 +95,7 @@ public class ServicesController : Controller
 
         var patients = new List<Patient>();
         patient.Id = "IdToBeOverridedInApi";
+        patient.Age = DateTime.Now.Year - patient.Dob.Year;
 
         if (!ModelState.IsValid)
         {
@@ -115,7 +121,8 @@ public class ServicesController : Controller
                     {
                         var getPatientId = apiResponseObject.Replace("Patient successfully created: ", "");
                         Console.WriteLine(getPatientId);
-                        using (var res = new HttpClient().GetAsync(_apiPatientsUri + "/GetOnePatient?query=" + getPatientId))
+                        using (var res = new HttpClient().GetAsync(_apiPatientsUri + "/GetOnePatient?query=" +
+                                                                   getPatientId))
                         {
                             if (res.Result.StatusCode == HttpStatusCode.OK)
                             {
@@ -157,14 +164,15 @@ public class ServicesController : Controller
 
         return View("Index", Tuple.Create(patients, new List<Note>()));
     }
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult UpdatePatient(Patient patient)
     {
+        patient.Age = DateTime.Now.Year - patient.Dob.Year;
         // Reset ViewBag
         ViewBag.PatientUpdated = false;
-        
+
         if (!ModelState.IsValid)
         {
             ModelState.AddModelError(string.Empty, "Invalid data provided.");
@@ -174,7 +182,7 @@ public class ServicesController : Controller
 
         // Log request data for debugging purposes
         Console.WriteLine("Request Data: " + JsonConvert.SerializeObject(patient));
-    
+
         try
         {
             using (var response = new HttpClient().PutAsync(_apiPatientsUri + "/UpdatePatient/" + patient.Id,
@@ -184,7 +192,7 @@ public class ServicesController : Controller
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
                     ViewBag.PatientUpdated = true;
-                
+
                     ViewBag.PatientUpdatedConfirmation = "Patient successfully updated.";
                     var patients = new List<Patient>();
                     patients.Add(patient);
@@ -244,10 +252,10 @@ public class ServicesController : Controller
         // If patient is not found or an error occurs, redirect back to the Index view
         return RedirectToAction("Index");
     }
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult DeletePatient(string id)
+    public async Task<IActionResult> DeletePatient(string id)
     {
         try
         {
@@ -256,27 +264,83 @@ public class ServicesController : Controller
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
-                    ViewBag.PatientDeleted = true;
-                    ViewBag.PatientDeletedConfirmation = "Patient successfully deleted.";
+                    await DeleteAllPatientNotes(id);
+                    TempData["SuccessMessage"] = "Patient successfully deleted.";
                 }
                 else
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
-                    ViewBag.PatientDeleted = false;
-                    ViewBag.PatientDeletedConfirmation = "Patient deletion failed.";
+                    TempData["ErrorMessage"] = "Patient deletion failed.";
                 }
             }
         }
         catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
-            ViewBag.PatientDeleted = false;
-            ViewBag.PatientDeletedConfirmation = "Patient deletion failed.";
+            TempData["ErrorMessage"] = "Patient deletion failed.";
         }
 
-        return View("Index");
+        return RedirectToAction("Index");
     }
-    
+
+    private void GetDiabetesRisk(Patient? patient)
+    {
+        var diabetesRiskCalculator = new DiabetesRiskCalculator();
+        var notes = new List<string>();
+
+        if (patient == null) return;
+        
+        using (var response = new HttpClient().GetAsync(_apiNotesUri + "/GetPatientNotes/" + patient.Id))
+        {
+            if (response.Result.StatusCode == HttpStatusCode.OK)
+            {
+                var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
+                var deserializedObject = JsonConvert.DeserializeObject<List<Note>>(apiResponseObject);
+
+                if (deserializedObject != null) notes = deserializedObject.Select(note => note.NoteText).ToList();
+                
+                //Update diabestesRisk locally
+                patient.DiabetesRisk = diabetesRiskCalculator.CalculateDiabetesRiskReport(patient, notes);
+                
+                UpdatePatientDiabetesRisk(patient);
+            }
+            else
+                ViewBag.StatusCode = response.Result.StatusCode;
+        }
+
+        
+        
+    }
+
+    /// <summary>
+    /// Update diabetesRisk in DB
+    /// </summary>
+    /// <param name="patient"></param>
+    /// <returns></returns>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    private Task UpdatePatientDiabetesRisk(Patient patient)
+    {
+        using (var res = new HttpClient().PutAsync(_apiPatientsUri + "/UpdatePatient/" + patient.Id,
+                   new StringContent(JsonConvert.SerializeObject(patient), Encoding.UTF8, "application/json")))
+        {
+            //Update diabetesRisk in DB
+            if (res.Result.StatusCode == HttpStatusCode.OK)
+            {
+                ViewBag.StatusCode = res.Result.StatusCode;
+            }
+            else
+            {
+                ViewBag.StatusCode = res.Result.StatusCode;
+                Console.WriteLine("Response Data: " + res.Result.Content.ReadAsStringAsync().Result);
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    /// Notes ///
+    /////////////
     public IActionResult GetPatientNotes(string getNotesByPatientId)
     {
         var notes = new List<Note>();
@@ -284,7 +348,8 @@ public class ServicesController : Controller
 
         try
         {
-            using (var response = new HttpClient().GetAsync(_apiPatientsUri + "/GetOnePatient?query=" + getNotesByPatientId))
+            using (var response =
+                   new HttpClient().GetAsync(_apiPatientsUri + "/GetOnePatient?query=" + getNotesByPatientId))
             {
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
@@ -294,14 +359,17 @@ public class ServicesController : Controller
                     patients = deserializedObject;
                 }
                 else
+                {
                     ViewBag.StatusCode = response.Result.StatusCode;
+                    TempData["ErrorMessage"] = "Patient not found.";
+                }
             }
         }
         catch (Exception e)
         {
             ViewBag.StatusCode = e.Message;
         }
-        
+
         try
         {
             using (var response = new HttpClient().GetAsync(_apiNotesUri + "/GetPatientNotes/" + getNotesByPatientId))
@@ -312,6 +380,20 @@ public class ServicesController : Controller
                     var deserializedObject = JsonConvert.DeserializeObject<List<Note>>(apiResponseObject);
 
                     notes = deserializedObject;
+                    
+                    //Recalculate diabetesRisk
+                    if (patients != null)
+                    {
+                        if (deserializedObject != null)
+                        {
+                            var stringifyNotes = deserializedObject.Select(note => note.NoteText).ToList();
+                            var diabetesRiskCalculator = new DiabetesRiskCalculator();
+                            patients.First().DiabetesRisk = diabetesRiskCalculator.CalculateDiabetesRiskReport(patients.First(), stringifyNotes);
+                        }
+                        
+                        //DB update
+                        UpdatePatientDiabetesRisk(patients.First());
+                    } 
                 }
                 else
                     ViewBag.StatusCode = response.Result.StatusCode;
@@ -351,6 +433,31 @@ public class ServicesController : Controller
         return View("Index", Tuple.Create(new List<Patient>(), notes));
     }
 
+    public int CountPatientNotes(string patientId)
+    {
+        try
+        {
+            using (var response = new HttpClient().GetAsync(_apiNotesUri + "/CountPatientNotes/" + patientId))
+            {
+                if (response.Result.StatusCode == HttpStatusCode.OK)
+                {
+                    var apiResponseObject = response.Result.Content.ReadAsStringAsync().Result;
+                    var deserializedObject = JsonConvert.DeserializeObject<int>(apiResponseObject);
+
+                    return deserializedObject;
+                }
+                else
+                    ViewBag.StatusCode = response.Result.StatusCode;
+            }
+        }
+        catch (Exception e)
+        {
+            ViewBag.StatusCode = e.Message;
+        }
+
+        return 0;
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult CreateNote(Note note)
@@ -387,7 +494,7 @@ public class ServicesController : Controller
                 {
                     ViewBag.StatusCode = response.Result.StatusCode;
                     ViewBag.NoteCreated = true;
-                    
+
                     if (ViewBag.NoteCreated == true)
                     {
                         TempData["SuccessMessage"] = "Note successfully created.";
@@ -462,7 +569,7 @@ public class ServicesController : Controller
     public IActionResult UpdateNote(Note note)
     {
         ViewBag.NoteUpdated = false;
-        
+
         if (!ModelState.IsValid)
         {
             ModelState.AddModelError(string.Empty, "Invalid data provided.");
@@ -472,7 +579,7 @@ public class ServicesController : Controller
 
         // Log request data for debugging purposes
         Console.WriteLine("Request Data: " + JsonConvert.SerializeObject(note));
-    
+
         try
         {
             using (var response = new HttpClient().PutAsync(_apiNotesUri + "/UpdateNote/" + note.Id,
@@ -480,10 +587,10 @@ public class ServicesController : Controller
             {
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
-                   TempData["SuccessMessage"] = "Note updated successfully";
-                   return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
-
+                    TempData["SuccessMessage"] = "Note updated successfully";
+                    return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
                 }
+
                 // Log response data for debugging purposes
                 Console.WriteLine("Response Data: " + response.Result.Content.ReadAsStringAsync().Result);
             }
@@ -492,8 +599,49 @@ public class ServicesController : Controller
         {
             TempData["ErrorMessage"] = $"Internal server error: {e.Message}";
         }
-        
+
         return RedirectToAction("GetPatientNotes", new { getNotesByPatientId = note.PatientId });
     }
-      
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteAllPatientNotes(string patientId)
+    {
+        try
+        {
+            using (var client = new HttpClient())
+            {
+                var apiUrl = $"{_apiNotesUri}/DeleteAllPatientNotes/{patientId}";
+
+                var response = await client.DeleteAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Notes deleted successfully";
+                    return Ok("Notes deleted successfully");
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    TempData["ErrorMessage"] = "Notes not found";
+                    return NotFound("Notes not found");
+                }
+                else
+                {
+                    // Handle other error cases
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    TempData["ErrorMessage"] = $"Bad Request: {errorMessage}";
+                    return BadRequest($"Bad Request: {errorMessage}");
+                }
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            TempData["ErrorMessage"] = $"Internal server error: {ex.Message}";
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Internal server error: {ex.Message}";
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
 }

@@ -14,9 +14,11 @@ public class AccountController : Controller
 {
     private readonly HttpClient _apiClient = new()
     {
-        BaseAddress = new Uri("https://localhost:7192")
+        BaseAddress = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
+            ? new Uri("http://host.docker.internal:600/")
+            : new Uri("https://localhost:7192/")
     };
-
+    
     // Registration Action
     [HttpGet]
     public IActionResult Register()
@@ -38,17 +40,21 @@ public class AccountController : Controller
             }
             else
             {
-                // Send a POST request to your API to register the user
-                HttpResponseMessage response = await _apiClient.PostAsJsonAsync("api/Auth/Register", model);
+                try
+                {
+                    HttpResponseMessage response = await _apiClient.PostAsJsonAsync("api/Auth/Register", model);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    // Registration successful
-                    return RedirectToAction("Login");
-                }
-                else
-                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Registration successful
+                        return RedirectToAction("Login");
+                    }
+
                     ModelState.AddModelError(string.Empty, "Registration failed.");
+                }
+                catch (HttpRequestException ex)
+                {
+                    ModelState.AddModelError(string.Empty, "Error during api call: " + ex.Message);
                 }
             }
         }
@@ -58,8 +64,16 @@ public class AccountController : Controller
 
     private async Task<bool> UserExists(string userName, string email)
     {
-        var response = await _apiClient.GetAsync($"api/Auth/UserExists?userName={userName}&email={email}");
-        return response.IsSuccessStatusCode;
+        try
+        {
+            var response = await _apiClient.GetAsync($"api/Auth/UserExists?userName={userName}&email={email}");
+            return response.IsSuccessStatusCode;
+        }
+        catch (HttpRequestException ex)
+        {
+            ModelState.AddModelError(string.Empty, "Error during api call: " + ex.Message);
+            return false;
+        }
     }
 
     // Login Action
@@ -75,58 +89,65 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            // Create a dictionary to hold the request parameters
-            var requestParams = new Dictionary<string, string>
+            try
             {
-                { "username", model.UserName },
-                { "password", model.Password }
-            };
-
-            _apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            string json = JsonConvert.SerializeObject(model);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _apiClient.PostAsync("api/Auth/Login", content);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                // Log the response content for debugging purposes
-                var responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseContent);
-                if(response.StatusCode == HttpStatusCode.NotFound)
-                    ModelState.AddModelError(string.Empty, "Login failed: user not found. ");
-                else
+                // Create a dictionary to hold the request parameters
+                var requestParams = new Dictionary<string, string>
                 {
-                    ModelState.AddModelError(string.Empty, "Login failed: wrong username or password.");
-                }
-            }
-            else
-            {
-                // Read the response body and parse the JWT token
-                var responseContent = await response.Content.ReadAsStringAsync();
+                    { "username", model.UserName },
+                    { "password", model.Password }
+                };
 
-                // Deserialize the response JSON
-                var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(responseContent);
+                _apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                string json = JsonConvert.SerializeObject(model);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await _apiClient.PostAsync("api/Auth/Login", content);
 
-                if (tokenResponse != null)
+
+                if (!response.IsSuccessStatusCode)
                 {
-                    // Store the token in a secure way (e.g., cookies or session)
-                    // For example, you can use TempData for a temporary session-based storage
-                    TempData["AuthToken"] = tokenResponse.Token;
-                    TempData["IsAuthenticated"] = true; // Set to true when the user is authenticated
-
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
+                    // Log the response content for debugging purposes
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(responseContent);
+                    if (response.StatusCode == HttpStatusCode.NotFound)
+                        ModelState.AddModelError(string.Empty, "Login failed: user not found. ");
+                    else
                     {
-                        new(ClaimTypes.Name, model.UserName),
-                        new(ClaimTypes.Role, "User")
-                    }, CookieAuthenticationDefaults.AuthenticationScheme)));
-
-                    // Redirect to a protected area or dashboard
-                    return RedirectToAction("Index", "Home");
+                        ModelState.AddModelError(string.Empty, "Login failed: wrong username or password.");
+                    }
                 }
                 else
                 {
+                    // Read the response body and parse the JWT token
+                    var responseContent = await response.Content.ReadAsStringAsync();
+
+                    // Deserialize the response JSON
+                    var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(responseContent);
+
+                    if (tokenResponse != null)
+                    {
+                        // Store the token in a secure way (e.g., cookies or session)
+                        // For example, you can use TempData for a temporary session-based storage
+                        TempData["AuthToken"] = tokenResponse.Token;
+                        TempData["IsAuthenticated"] = true; // Set to true when the user is authenticated
+
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                            new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
+                            {
+                                new(ClaimTypes.Name, model.UserName),
+                                new(ClaimTypes.Role, "User")
+                            }, CookieAuthenticationDefaults.AuthenticationScheme)));
+
+                        // Redirect to a protected area or dashboard
+                        return RedirectToAction("Index", "Home");
+                    }
+
                     ModelState.AddModelError(string.Empty, "Login failed.");
                 }
+            }
+            catch (HttpRequestException ex)
+            {
+                ModelState.AddModelError(string.Empty, "Error during api call: " + ex.Message);
             }
         }
 

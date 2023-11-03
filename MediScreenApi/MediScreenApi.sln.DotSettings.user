@@ -1,0 +1,26 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=69b49447_002Dc533_002D498e_002D8751_002D69a08cd488d8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetRiskyPatientById_ExistingPatient_ReturnsPatient #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5C687443-7826-4327-A87D-98EBEFE42036::net7.0::MediScreenApi.Tests.AssessControllerTests.GetRiskyPatientById_ExistingPatient_ReturnsPatient&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7fd77953_002De391_002D4e3e_002D8f7f_002D94f4a4b18516/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetRiskyPatientById_ExistingPatient_ReturnsPatient #4" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7E00B17D-91C7-4FED-B87A-7B6D709BD8C2::net7.0::MediScreenApi.Tests.AssessControllerTests.GetRiskyPatientById_ExistingPatient_ReturnsPatient&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8e29099c_002D519c_002D4db0_002Dbb05_002Da23e3b3aa68f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AssessControllerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7E00B17D-91C7-4FED-B87A-7B6D709BD8C2::net7.0::MediScreenApi.Tests.AssessControllerTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=91d2e7d6_002D72c2_002D451b_002Db444_002D068969b6bb68/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetRiskyPatientById_ExistingPatient_ReturnsPatient #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7E00B17D-91C7-4FED-B87A-7B6D709BD8C2::net7.0::MediScreenApi.Tests.AssessControllerTests.GetRiskyPatientById_ExistingPatient_ReturnsPatient&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a8a1e2c5_002D0956_002D4821_002D8235_002D5eb81b72533e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetRiskyPatientById_ExistingPatient_ReturnsPatient" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5C687443-7826-4327-A87D-98EBEFE42036::net7.0::MediScreenApi.Tests.AssessControllerTests.GetRiskyPatientById_ExistingPatient_ReturnsPatient&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

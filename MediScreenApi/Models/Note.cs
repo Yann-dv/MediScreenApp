@@ -21,4 +21,7 @@ public class Note
 
     [BsonElement("note")]
     public string NoteText { get; set; }
+
+    [BsonElement("note_guid")]
+    public string NoteGuid { get; set; } = Guid.NewGuid().ToString();
 }

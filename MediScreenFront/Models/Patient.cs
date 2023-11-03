@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MediScreenFront.Models;
 
@@ -8,6 +6,9 @@ public class Patient
 {
     [DataMember]
     public string? Id { get; set; }
+    
+    [DataMember]
+    public int Age { get; set; }
 
     [DataMember]
     public string FName { get; set; }
@@ -26,4 +27,6 @@ public class Patient
 
     [DataMember]
     public string? Phone { get; set; }
+
+    public string? DiabetesRisk { get; set; }
 }

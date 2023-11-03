@@ -1,0 +1,180 @@
+@model Tuple<List<Patient>, List<Note>?>
+
+
+<div class="services-form">
+    <!-- Dropend buttons -->
+    <!-- Patients -->
+    <div class="btn-group dropdown my-1">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+            Patients
+        </button>
+        <ul class="dropdown-menu my-2 bg-secondary">
+            <li>
+                <div class="dropdown-item">
+                    <h5>List all patients</h5>
+                    @using (Html.BeginForm("ListPatients", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-primary my-2">List all patients</button>
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="dropdown-item">
+                    <h5>Find a patient</h5>
+                    @using (Html.BeginForm("GetOnePatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="query" name="query" placeholder="Enter a query">
+                        </div>
+                        <button type="submit" class="btn btn-primary my-2">Search</button>
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="dropdown-item dropend">
+                    <h5>Create a patient</h5>
+                    <button class="btn btn-primary my-2 dropdown-toggle mx-4" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                        Create form
+                    </button>
+                    <ul class="dropdown-menu bg-secondary submenu">
+                        <li>
+                            <div class="dropdown-item submenu-item">
+                                <h5>New patient</h5>
+                                @using (Html.BeginForm("CreatePatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                                {
+                                    @Html.ValidationSummary()
+                                    @Html.AntiForgeryToken()
+                                    <div class="form-group">
+                                        <label>Gender</label>
+                                        <div class="form-control">
+                                            <div class="form-check">
+                                                <input type="radio" id="GenderH" name="Gender" value='M' class="form-check-input" checked>
+                                                <label for="GenderH" class="form-check-label">Male (H)</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="radio" id="GenderF" name="Gender" value='F' class="form-check-input">
+                                                <label for="GenderF" class="form-check-label">Female (F)</label>
+                                            </div>
+                                        </div>
+                                        <label for="Dob">Date of birth</label>
+                                        <input type="date" class="form-control" id="Dob" name="Dob" placeholder="Date of Birth">
+                                        <input type="text" class="form-control" id="FName" name="FName" placeholder="First Name">
+                                        <input type="text" class="form-control" id="LName" name="LName" placeholder="Last Name">
+                                        <input type="text" class="form-control" id="Address" name="Address" placeholder="Address">
+                                        <input type="text" class="form-control" id="Phone" name="Phone" placeholder="Phone">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary my-2">Create</button>
+                                }
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <div class="dropdown-item">
+                    <h5>Edit a patient</h5>
+                    @using (Html.BeginForm("SearchPatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                    {
+                        @Html.ValidationSummary()
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="SearchPatientId" name="searchId" placeholder="Patient Id">
+                        </div>
+                        <button type="submit" class="btn btn-primary my-2">Search</button>
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="dropdown-item">
+                    <h5>Delete a patient</h5>
+                    @using (Html.BeginForm("DeletePatient", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                    {
+                        @Html.ValidationSummary()
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="DeletePatientId" name="id" placeholder="Patient Id">
+                            <input type="hidden" name="_method" value="DELETE">
+                        </div>
+                        <button type="submit" class="btn btn-danger my-2">Delete</button>
+                    }
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!-- Notes -->
+    <div class="btn-group dropdown my-1">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+            Notes
+        </button>
+        <ul class="dropdown-menu my-2 bg-secondary">
+            <li>
+                <div class="dropdown-item">
+                    <h5>List all notes</h5>
+                    @using (Html.BeginForm("GetAllNotes", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-primary my-2">Get all notes</button>
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="dropdown-item">
+                    <h5>See patient notes</h5>
+                    @using (Html.BeginForm("GetPatientNotes", "Services", FormMethod.Post, new { @class = "mx-4" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="getNotesByPatientId" name="getNotesByPatientId" placeholder="Patient Id">
+                        </div>
+                        <button type="submit" class="btn btn-primary my-2">Search notes</button>
+                    }
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!-- Assess diabetes risks -->
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        Assess Diabetes Risk
+    </button>
+    <ul class="dropdown-menu my-2 bg-secondary">
+        <li>
+            <div class="dropdown-item">
+                <h5>List all patients with risks</h5>
+                @using (Html.BeginForm("ListPatientsWithRisk", "Assess", FormMethod.Post, new { @class = "mx-4" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-primary my-2">Display</button>
+                }
+            </div>
+        </li>
+        <li>
+            <div class="dropdown-item">
+                <h5>Find a patient by Id</h5>
+                @using (Html.BeginForm("SearchByIdPatientAssess", "Assess", FormMethod.Post, new { @class = "mx-4" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="assessIdQuery" name="assessIdQuery" placeholder="Enter a query">
+                    </div>
+                    <button type="submit" class="btn btn-primary my-2">Search</button>
+                }
+            </div>
+        </li>
+        <li>
+            <div class="dropdown-item">
+            <h5>Find a patient by FamilyName</h5>
+            @using (Html.BeginForm("SearchByFNamePatientAssess", "Assess", FormMethod.Post, new { @class = "mx-4" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <input type="text" class="form-control" id="assessFNameQuery" name="assessFNameQuery" placeholder="Enter a query">
+                </div>
+                <button type="submit" class="btn btn-primary my-2">Search</button>
+            }
+            </div>
+        </li>
+    </ul>
+    <!-- End of Dropend buttons -->
+</div>

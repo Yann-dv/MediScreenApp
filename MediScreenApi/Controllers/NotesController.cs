@@ -11,22 +11,33 @@ namespace MediScreenApi.Controllers
     {
         private readonly IMongoCollection<Note> _notesCollection;
 
-        public NotesController(IMongoClient mongoClient)
+        public NotesController(IMongoClient mongoClient, bool isTest = false)
         {
-            string databaseName = "MediScreenMongoDb";
-            
-            var database = mongoClient.GetDatabase(databaseName);
+            if (isTest == false)
+            {
+                const string databaseName = "MediScreenMongoDb";
 
-            _notesCollection = database.GetCollection<Note>("Notes");
+                var database = mongoClient.GetDatabase(databaseName);
+
+                _notesCollection = database.GetCollection<Note>("Notes");
+            }
+            else
+            {
+                const string databaseName = "TestMediScreenMongoDb";
+
+                var database = mongoClient.GetDatabase(databaseName);
+
+                _notesCollection = database.GetCollection<Note>("TestNotes");
+            }
         }
 
         /// <summary>
         /// Get all notes
         /// </summary>
         /// <returns></returns>
+        /// <description>Allow the client to get all the Notes, from all patients</description>
         [HttpGet]
         [Route("GetAllNotes")]
-
         public ActionResult<IEnumerable<Note>> GetAllNotes()
         {
             try
@@ -41,10 +52,32 @@ namespace MediScreenApi.Controllers
         }
         
         /// <summary>
+        /// Count all notes of a specific patient
+        /// </summary>
+        /// <param name="patientId"></param>
+        /// <returns></returns>
+        /// <description>Return a count of all notes of a patient, to display it in a counter</description>
+        [HttpGet]
+        [Route("CountPatientNotes/{patientId}")]
+        public int CountPatientNotes(string patientId)
+        {
+            try
+            {
+                var notes = _notesCollection.Find(n => n.PatientId == patientId).ToList();
+                return notes.Count;
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
+            
+        /// <summary>
         /// Get all notes for a patient
         /// </summary>
         /// <param name="patientId"></param>
         /// <returns></returns>
+        /// <description>Allow the client to get all the Notes, from a specific patient</description>
         [HttpGet]
         [Route("GetPatientNotes/{patientId}")]
         public IActionResult GetPatientNotes(string patientId)
@@ -52,7 +85,7 @@ namespace MediScreenApi.Controllers
             try
             {
                 var notes = _notesCollection.Find(n => n.PatientId == patientId).ToList();
-                if (notes == null)
+                if (notes == null || notes.Count < 1)
                 {
                     return NotFound();
                 }
@@ -69,6 +102,7 @@ namespace MediScreenApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        /// <description>Allow the client to get a specific note, by its ID</description>
         [HttpGet]
         [Route("GetNote/{id}")]
         public ActionResult<Note> GetNoteById(string id)
@@ -93,6 +127,7 @@ namespace MediScreenApi.Controllers
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
+        /// <description>Allow the client to create a new note</description>
         [HttpPost]
         [Route("CreateNote")]
         public IActionResult CreateNote([FromBody] Note note)
@@ -122,6 +157,7 @@ namespace MediScreenApi.Controllers
         /// <param name="id"></param>
         /// <param name="updatedNote"></param>
         /// <returns></returns>
+        /// <description>Allow the client to update an existing note</description>
         [HttpPut]
         [Route("UpdateNote/{id}")]
         public IActionResult UpdateNote(string id, [FromBody] Note updatedNote)
@@ -154,6 +190,7 @@ namespace MediScreenApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        /// <description>Allow the client to delete a specific note, by its ID</description>
         [HttpDelete]
         [Route("DeleteNote/{id}")]
         public IActionResult DeleteNoteById(string id)
@@ -167,6 +204,33 @@ namespace MediScreenApi.Controllers
                 }
 
                 _notesCollection.DeleteOne(n => n.Id == id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Delete all notes for a patient
+        /// </summary>
+        /// <param name="patientId"></param>
+        /// <returns></returns>
+        /// <description>Allow the client to delete all the notes, from a specific patient</description>
+        [HttpDelete]
+        [Route("DeleteAllPatientNotes/{patientId}")]
+        public IActionResult DeleteAllPatientNotes(string patientId)
+        {
+            try
+            {
+                var notes = _notesCollection.Find(n => n.PatientId == patientId).ToList();
+                if (notes == null || notes.Count < 1)
+                {
+                    return NotFound();
+                }
+
+                _notesCollection.DeleteMany(n => n.PatientId == patientId);
                 return NoContent();
             }
             catch (Exception ex)

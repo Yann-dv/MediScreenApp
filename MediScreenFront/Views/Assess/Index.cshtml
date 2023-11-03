@@ -1,0 +1,168 @@
+@using Microsoft.IdentityModel.Tokens
+@model Tuple<List<Patient>, List<Note>?>
+
+@{
+    ViewBag.Title = "Assessment";
+}
+
+
+<section class="container pt-4">
+    <h2>@ViewData["Title"]</h2>
+    <div class="assessment-container">
+
+        @await Html.PartialAsync("_Navbar")
+
+        <div class="patientsWithRisk-container">
+             <!-- Toast for copy to clipboard -->
+                <div class="toast" id="copiedToast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong class="mr-auto">Copied</strong>
+                        <small class="text-muted">At @DateTime.Now.ToString("HH:mm:ss")</small>
+                        <button type="button" class="ml-2 mb-1 close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        The Patient Id has been copied to the clipboard.
+                    </div>
+                </div>
+            @if (!Model.Item1.IsNullOrEmpty() && Model.Item1.Count > 0)
+            {
+                <h3 class="m-3 text-decoration-underline">Patients with Diabetes risk</h3>
+                foreach (var patient in @Model.Item1)
+                {
+                    <div class="@(Model.Item1.Count > 1 ? "" : "col") patient-card card-body primary-border rounded p-3">
+                        <div class="card-buttons-group">
+                            <div><i class="fa-regular fa-user btn btn-secondary">&nbsp;</i></div>
+                            <div><button title="Copy to clipboard" class="btn btn-primary copy-btn" onclick="copyToClipboard('@patient.Id', 'Patient')">
+                                <i class="fa-solid fa-copy fs-6 p-0"></i>
+                            </button>
+                                    <button title="See patient history" class="btn btn-primary" onclick="redirectToGetPatientNotes('@patient.Id')">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                            </div>
+                        </div>
+                        <ul>
+                            <p class="card-id" title="@patient.Id">ID: @patient.Id &nbsp;</p>
+                            <li>Gender: @patient.Gender</li>
+                            <li>Age: @patient.Age</li>
+                            <li>First Name: @patient.FName</li>
+                            <li>Last Name: @patient.LName</li>
+                            <li>Date of Birth: @patient.Dob</li>
+                            <li>Address: @patient.Address</li>
+                            <li>Phone: @patient.Phone</li>
+                        </ul>
+                        <div class="risk">
+                            <h4>Assessed risk: </h4>
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="declaredDiabetes-@patient.Id" class="custom-checkbox" name="declaredDiabetes" onchange="updateRiskAndColor('@patient.Id')">
+                                <label for="declaredDiabetes-@patient.Id" class="checkbox-label">Declare diabetic</label>
+                            </div>
+                            <p id="patientDiabetesRisk-@patient.Id" class="text-decoration-underline fw-bold">@patient.DiabetesRisk</p>
+
+                            <div class="progress">
+                                @if (patient.DiabetesRisk != null)
+                                {
+                                    var risk = patient.DiabetesRisk switch
+                                    {
+                                        "Borderline" => 1,
+                                        "Early Onset" => 2,
+                                        "In Danger" => 3,
+                                        "Declared diabetes" => 4,
+                                        _ => 0
+                                    };
+                        
+                                    var color = patient.DiabetesRisk switch
+                                    {
+                                        "Borderline" => "bg-info",
+                                        "Early Onset" => "bg-warning",
+                                        "In Danger" => "bg-danger",
+                                        "Declared diabetes" => "bg-dark",
+                                        _ => "bg-success"
+                                    };
+                        
+                                    var width = (risk * 30) + "%";
+                        
+                                    <div id="progressBar-@patient.Id" class="progress-bar @color" role="progressbar" 
+                                        style="width: @width" aria-valuenow="@risk" aria-valuemin="0" aria-valuemax="4"
+                                        data-original-risk="@risk" data-original-color="@color" data-original-diabetes-risk="@patient.DiabetesRisk">
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <h3 class="m-3 text-decoration-underline">Patients with Diabetes risk</h3>
+                <div class="col patient-card card-body primary-border rounded p-3">
+                    <p class="text-center">No patients with Diabetes risk</p>
+                </div>
+            }     
+        </div>
+    </div>
+</section>
+
+
+@section Scripts
+{
+    <script>
+       function updateRiskAndColor(id) {
+           let declaredDiabetesCheckbox = document.getElementById('declaredDiabetes-' + id);
+           let progressBar = document.querySelector('#progressBar-' + id);
+           let originalDiabetesRisk = progressBar.getAttribute('data-original-diabetes-risk');
+           let originalRisk = parseInt(progressBar.getAttribute('data-original-risk'));
+           let originalColor = progressBar.getAttribute('data-original-color');
+           let patientDiabetesRisk = document.querySelector('#patientDiabetesRisk-' + id);
+       
+           if (declaredDiabetesCheckbox.checked) {
+               progressBar.className = 'progress-bar bg-dark';
+               progressBar.style.width = '100%';
+               progressBar.setAttribute('aria-valuenow', '4');
+               patientDiabetesRisk.innerText = 'Diabetic';
+           } else {
+               progressBar.className = 'progress-bar ' + originalColor;
+               progressBar.style.width = (originalRisk * 30) + "%";
+               progressBar.setAttribute('aria-valuenow', originalRisk.toString());
+               patientDiabetesRisk.innerText = originalRisk === 4 ? 'Diabetic' : originalDiabetesRisk;
+           }
+       }
+
+
+
+    </script>
+
+    <script>
+         function redirectToGetPatientNotes(patientId) {
+               window.location.href = '/Services/GetPatientNotes?getNotesByPatientId=' + patientId;
+         }
+         
+          function copyToClipboard(copiedId, type) {
+                    const el = document.createElement('textarea');
+                    el.value = copiedId, type;
+                    document.body.appendChild(el);
+                    el.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(el);
+            
+                    const toastElement = document.getElementById('copiedToast');
+                    const toastContent = toastElement.querySelector('.toast-body');
+                    const toast = new bootstrap.Toast(toastElement);
+                    toastElement.style.setProperty('max-width', '100% !important');
+                    toastContent.innerHTML = `The ${type} Id has been copied to the clipboard.`;
+                    toast.show();
+            
+          
+                    const closeBtn = toastElement.querySelector('.close');
+                    closeBtn.addEventListener('click', function () {
+                        toast.hide();
+                    });
+            
+                    setTimeout(function () {
+                        toast.hide();
+                    }, 4000); 
+                }
+     </script>
+}

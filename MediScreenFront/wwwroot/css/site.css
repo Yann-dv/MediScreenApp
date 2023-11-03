@@ -1,6 +1,7 @@
 :root{
     --primary-color: #00849a;
     --active-bg-color: #338bff;
+    --patient-card-bg-color: #f5f5f5;
 }
 
 a:hover {
@@ -9,12 +10,6 @@ a:hover {
 
 html {
   font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 18px;
-  }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -92,22 +87,45 @@ body {
     filter: blur(5px);
 }
 
-.patient-card, .note-card {
-    position: relative;
-}
-
 .card-id{
-    margin-left: 1.2rem;
     width: 80%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: .5rem;
+    margin-top: .5rem;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-label {
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.custom-checkbox {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.fa-list {
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    background-color: #cff4fc;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.7rem;
+    border-radius: .25rem;
 }
 
 .card-buttons-group {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+    display: flex;
+    justify-content: space-between;
 }
 
 .active-link, .nav-link:hover {
@@ -121,4 +139,50 @@ body {
 
 section.container {
     margin-bottom: 4rem;
+}
+
+.card-body {
+    background-color: var(--patient-card-bg-color);
+    margin: 10px;
+    box-shadow: rgba(0, 0, 0, 0.81) 2px 2px 2px;
+}
+
+.patient-card {
+    position: relative;
+}
+
+.diabetes-risk {
+    position: absolute;
+    bottom: .5rem;
+    right: .5rem;
+}
+
+
+@media (min-width: 768px) {
+    html {
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 992px) {
+    .card-body {
+        width: 30%;
+    }
+
+    .diabetes-risk:hover {
+        cursor: pointer;
+    }
+    
+    .diabetes-risk:hover:before{
+        content: "Diabetes Risk";
+    }
+
+    .patients-container, .notes-container, .patientsWithRisk-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .patients-container h3, .notes-container h3, .patientsWithRisk-container h3 {
+        width: 100%;
+    }
 }
