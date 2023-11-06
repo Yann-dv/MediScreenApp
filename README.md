@@ -32,7 +32,7 @@ The primary objectives of this project are as follows:
 - Utilize .NET Core MVC as the primary framework for development.
 
 ## Key Features
-1. **Docker Infrastructure**: The project involves setting up an efficient Docker infrastructure that allows for easy deployment and scaling of microservices.
+1. **Docker Infrastructure**: The project involves setting up an efficient Docker infrastructure that allows for easy deployment and scaling of microservices. The Docker infrastructure also ensures a consistent runtime environment across different stages of the project. The project is configured to be containerized on the linux docker. This requires WSL2 installed for Windows machines, as well as docker desktop to facilitate management
 2. **RESTful Service**: We create a RESTful API for seamless access to patient records, ensuring data availability for analysis.
 3. **Diabetes Report Generation**: At the heart of the project is the ability to generate diabetes reports, aiding in medical decision-making.
 
