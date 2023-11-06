@@ -49,8 +49,8 @@ The deliverables for this project are crucial to tracking progress and ensuring 
 2. **Retropective Templates**: Completed retrospective templates for each sprint, capturing insights and lessons learned.
 3. **Code Project Archive**: A Zip archive of the project's code, including a link to the GitHub repository where the code is hosted. This also includes a test report and Docker configuration files.
 4. **REST Service Documentation**: Comprehensive documentation outlining the REST services created, including API endpoints, request/response formats, and data models : 
-    - <a href="../MediScreenApp/MediScreenApi/swagger/v1/swagger.pdf">PDF Swagger Documentation</a>
-    - <a href="../MediScreenApp/MediScreenApi/swagger/v1/swagger.json">JSON Swagger Documentation</a>
+    - <a href="https://github.com/Yann-dv/MediScreenApp/blob/main/MediScreenApi/swagger/v1/swagger.pdf">PDF Swagger Documentation</a>
+    - <a href="https://github.com/Yann-dv/MediScreenApp/blob/main/MediScreenApi/swagger/v1/swagger.json">JSON Swagger Documentation</a>
 
 ## Technical Details
 ### Technologies Used
@@ -92,7 +92,7 @@ This sprint involves the integration of all microservices to ensure that they wo
 
 #### Test report
 The test report is a comprehensive document that outlines the testing process and results. It includes a summary of the testing approach, test cases, and test results.
-<img src="../MediScreenApp/ReadmeImages/tests_report.png" alt="Test Report" width="800"/>
+<img src="https://github.com/Yann-dv/MediScreenApp/blob/main/ReadmeImages/tests_report.png" alt="Test Report" width="800"/>
 
 ## Conclusion
 The Diabetes Prediction Project represents a significant step toward enhancing medical decision-making through technology. By leveraging microservices, Docker, and RESTful architecture, we have developed a versatile system that can contribute to the prediction of diabetes based on patient data. This README serves as both documentation and a guide for stakeholders, providing insight into the project's objectives, structure, and technical aspects.
