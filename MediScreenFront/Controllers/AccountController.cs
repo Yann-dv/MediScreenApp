@@ -15,7 +15,7 @@ public class AccountController : Controller
     private readonly HttpClient _apiClient = new()
     {
         BaseAddress = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
-            ? new Uri("http://host.docker.internal:600/")
+            ? new Uri("http://api:80/")
             : new Uri("https://localhost:7192/")
     };
     

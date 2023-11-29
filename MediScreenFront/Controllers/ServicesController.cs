@@ -12,11 +12,11 @@ namespace MediScreenFront.Controllers;
 public class ServicesController : Controller
 {
     private readonly string _apiPatientsUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
-        ? "http://host.docker.internal:600/api/Patients"
+        ? "http://api:80/api/Patients"
         : "https://localhost:7192/api/Patients";
 
     private readonly string _apiNotesUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
-        ? "http://host.docker.internal:600/api/Notes"
+        ? "http://api:80/api/Notes"
         : "https://localhost:7192/api/Notes";
 
     public IActionResult Index(List<Patient>? patients)

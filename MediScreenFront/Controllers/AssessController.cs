@@ -10,11 +10,11 @@ namespace MediScreenFront.Controllers;
 public class AssessController : Controller
 {
     private readonly string _apiPatientsUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
-        ? "http://host.docker.internal:600/api/Patients"
+        ? "http://api:80/api/Patients"
         : "https://localhost:7192/api/Patients";
 
     private readonly string _apiAssessUri = Environment.GetEnvironmentVariable("ASPNETCORE_SCOPE") == "docker"
-        ? "http://host.docker.internal:600/api/Assess"
+        ? "http://api:80/api/Assess"
         : "https://localhost:7192/api/Assess";
 
 
